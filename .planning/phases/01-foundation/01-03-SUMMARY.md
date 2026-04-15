@@ -251,3 +251,12 @@ Verified against every acceptance criterion plus commit existence:
 *Phase: 01-foundation*
 *Plan: 03*
 *Completed: 2026-04-15 (Tasks 3.1 + 3.2; Task 3.3 awaiting human-verify checkpoint)*
+
+---
+
+## Checkpoint Resolution
+
+**Type:** human-verify
+**Resolved:** 2026-04-15
+**User response:** approved (Lovelace pending)
+**Notes:** Build evidence accepted. Lovelace `.woff2` + license text to be supplied before Phase 5 launch (Playfair Display fallback active in interim — `LOVELACE-LICENSE.txt` placeholder is committed).
