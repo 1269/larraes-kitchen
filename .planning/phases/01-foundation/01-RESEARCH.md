@@ -1015,22 +1015,25 @@ Note: Biome has first-party `.astro` parsing in 2.3+. Confirm by running `pnpm e
 
 **User confirmation needed:** None. All assumptions are verifiable during Phase 1 execution (A1–A6 have programmatic verification steps; A7 is a matter of obeying the `rm` targets in the plan).
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Exact GitHub repo owner/name for branch protection scripting**
+1. **Exact GitHub repo owner/name for branch protection scripting** — **RESOLVED**
    - What we know: Project is a local git repo; there's a remote but it's not inspected here.
    - What's unclear: The `gh api repos/<owner>/<repo>/...` call needs the real path.
    - Recommendation: Planner includes a `scripts/setup-branch-protection.sh` that reads `gh repo view --json nameWithOwner` to avoid hardcoding.
+   - **RESOLVED:** Implemented in Plan 06 Task 6.1 (step 5 — `scripts/setup-branch-protection.sh` derives owner/repo via `gh repo view --json nameWithOwner`) and Plan 07 Task 7.6 (executes the script).
 
-2. **Is there already a Vercel team/account for the project?**
+2. **Is there already a Vercel team/account for the project?** — **RESOLVED**
    - What we know: Vercel is the locked deploy target.
    - What's unclear: Whether `vercel link` needs to create a new project or link to an existing one.
    - Recommendation: Phase 1 plan's Vercel task starts with an interactive `vercel link` prompt (not automated); capture the resulting `.vercel/project.json` to the repo.
+   - **RESOLVED:** Implemented in Plan 07 Task 7.3 as a `checkpoint:human-action` — maintainer runs `vercel link` interactively and captures `.vercel/project.json`.
 
-3. **CODEOWNERS username**
+3. **CODEOWNERS username** — **RESOLVED**
    - What we know: Single owner per D-11.
    - What's unclear: The actual GitHub username.
    - Recommendation: Planner parameterizes as `<maintainer-github-username>` and the plan's final human step fills it in.
+   - **RESOLVED:** Implemented in Plan 06 Task 6.1 (writes CODEOWNERS with `MAINTAINER-USERNAME` placeholder) and Plan 07 Task 7.2 (auto task that replaces the placeholder with the username supplied via Plan 07 Task 7.1 checkpoint).
 
 ## Environment Availability
 
