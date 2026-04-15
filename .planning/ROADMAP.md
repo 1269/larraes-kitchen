@@ -35,7 +35,7 @@ Five phases move Larrae's Kitchen from empty repo to first real booking. Phase 1
 **Plans**: 7 plans
   - [x] 01-01-PLAN.md — Wipe stale scaffold, init Astro 6 minimal template, pin Node 22 + pnpm 9
   - [x] 01-02-PLAN.md — Install framework integrations (react/mdx/sitemap/vercel), configure output:'server', register env var schema
-  - [ ] 01-03-PLAN.md — Install Tailwind v4 + shadcn/ui + Fontsource + Lovelace; author brand/semantic/typography tokens in `@theme`
+  - [x] 01-03-PLAN.md — Install Tailwind v4 + shadcn/ui + Fontsource + Lovelace; author brand/semantic/typography tokens in `@theme`
   - [ ] 01-04-PLAN.md — Author 8 Zod schemas, pricing stub, Content Collections config, and `.gitkeep` directory skeleton
   - [ ] 01-05-PLAN.md — Install dev tooling (Biome, Vitest, Playwright, lefthook) and author smoke test
   - [ ] 01-06-PLAN.md — Author CI workflows, CODEOWNERS, image-budget script, branch-protection script
