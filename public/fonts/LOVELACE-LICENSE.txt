@@ -1,0 +1,12 @@
+Lovelace Font — License Documentation
+
+PENDING: Maintainer must paste the license terms from the
+purchase receipt (Set Sail Studios / Ellen Luff) into this file
+before the production deploy (Phase 5).
+
+The @font-face declaration in src/styles/global.css references
+/fonts/Lovelace.woff2 — the actual font file must be committed
+alongside this license before Phase 5 launch.
+
+If Lovelace is not licensed for web use, fall back to Playfair Display
+for display type (RESEARCH § Assumption A3 fallback).

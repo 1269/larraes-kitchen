@@ -1,0 +1,45 @@
+/* Source: tailwindcss.com/docs/theme + CONTEXT D-01..D-04 */
+@import "tailwindcss";
+
+/* Fontsource CSS is imported from JS (see src/pages/index.astro or layout).
+   Lovelace is commercial; self-hosted below. License: /public/fonts/LOVELACE-LICENSE.txt */
+@font-face {
+  font-family: "Lovelace";
+  src: url("/fonts/Lovelace.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  /* ─── Brand layer (D-01, D-02) ─── */
+  --color-deep-amber: #B8621B;
+  --color-warm-cream: #F7EFD9;
+  --color-greens-deep: #2E4A2F;
+  --color-greens-mid: #4A6B4C;
+  --color-iron-black: #1C1B19;
+  --color-southern-red: #9F2F2A;
+  --color-butter-gold: #E8C36A;
+  --color-clay: #B5775E;
+
+  /* ─── Semantic layer (D-01) ─── */
+  --color-primary: var(--color-greens-deep);
+  --color-surface: var(--color-warm-cream);
+  --color-accent: var(--color-deep-amber);
+  --color-ink: var(--color-iron-black);
+
+  /* ─── Typography (D-03, D-04) ─── */
+  --font-display: "Lovelace", "Playfair Display", ui-serif, Georgia, serif;
+  --font-serif: "Playfair Display", ui-serif, Georgia, serif;
+  --font-sans: "Work Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  --text-display-xl: 4.5rem;
+  --text-display-xl--line-height: 1.05;
+  --text-display-lg: 3rem;
+  --text-display-md: 2rem;
+  --text-body-lg: 1.125rem;
+  --text-body-md: 1rem;
+  --text-body-sm: 0.875rem;
+  --text-eyebrow: 0.75rem;
+  --text-eyebrow--letter-spacing: 0.12em;
+}
