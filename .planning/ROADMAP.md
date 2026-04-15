@@ -33,7 +33,7 @@ Five phases move Larrae's Kitchen from empty repo to first real booking. Phase 1
   5. Warm palette and typography tokens are consumable as Tailwind utility classes in any `.astro` or `.tsx` file
 **Key risks addressed**: C4 (content edit breaks production build), H1 (photography LCP regression), H8 (agent pushing to main unreviewed)
 **Plans**: 7 plans
-  - [ ] 01-01-PLAN.md — Wipe stale scaffold, init Astro 6 minimal template, pin Node 22 + pnpm 9
+  - [x] 01-01-PLAN.md — Wipe stale scaffold, init Astro 6 minimal template, pin Node 22 + pnpm 9
   - [ ] 01-02-PLAN.md — Install framework integrations (react/mdx/sitemap/vercel), configure output:'server', register env var schema
   - [ ] 01-03-PLAN.md — Install Tailwind v4 + shadcn/ui + Fontsource + Lovelace; author brand/semantic/typography tokens in `@theme`
   - [ ] 01-04-PLAN.md — Author 8 Zod schemas, pricing stub, Content Collections config, and `.gitkeep` directory skeleton
