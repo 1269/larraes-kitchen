@@ -278,8 +278,8 @@ Which phases cover which requirements. Populated during roadmap creation.
 | LAUN-01..09 | Phase 5 | Pending |
 
 **Coverage:**
-- v1 requirements: ~103 total
-- Mapped to phases: 103
+- v1 requirements: 134 total
+- Mapped to phases: 134
 - Unmapped: 0 ✓
 
 ---
