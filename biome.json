@@ -2,13 +2,14 @@
   "$schema": "https://biomejs.dev/schemas/2.4.12/schema.json",
   "files": {
     "includes": [
-      "**/src/**/*.{ts,tsx,js,jsx,astro,json,css}",
+      "**/src/**/*.{ts,tsx,js,jsx,astro,json}",
       "**/tests/**/*.ts",
-      "!**/dist/**",
-      "!**/node_modules/**",
-      "!**/.astro/**",
-      "!**/.vercel/**",
-      "!**/public/**"
+      "!**/dist",
+      "!**/node_modules",
+      "!**/.astro",
+      "!**/.vercel",
+      "!**/public",
+      "!**/src/styles"
     ]
   },
   "linter": {

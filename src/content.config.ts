@@ -1,14 +1,14 @@
 // Source: docs.astro.build/en/guides/content-collections/ + CONTEXT D-05
 import { defineCollection } from "astro:content";
 import { glob } from "astro/loaders";
-import { siteSchema } from "./lib/schemas/site";
-import { heroSchema } from "./lib/schemas/hero";
 import { aboutSchema } from "./lib/schemas/about";
-import { menuItemSchema } from "./lib/schemas/menu";
-import { packageSchema } from "./lib/schemas/packages";
-import { testimonialSchema } from "./lib/schemas/testimonials";
 import { faqGroupSchema } from "./lib/schemas/faq";
 import { gallerySchema } from "./lib/schemas/gallery";
+import { heroSchema } from "./lib/schemas/hero";
+import { menuItemSchema } from "./lib/schemas/menu";
+import { packageSchema } from "./lib/schemas/packages";
+import { siteSchema } from "./lib/schemas/site";
+import { testimonialSchema } from "./lib/schemas/testimonials";
 
 const site = defineCollection({
   loader: glob({ base: "./src/content/site", pattern: "**/*.md" }),
