@@ -1,0 +1,65 @@
+---
+import { Star } from "lucide-react";
+import type { TestimonialData } from "@/lib/schemas/testimonials";
+
+interface Props {
+  id: string;
+  testimonials: TestimonialData[];
+}
+const { id, testimonials } = Astro.props;
+
+const sorted: TestimonialData[] = [...testimonials].sort((a, b) => a.order - b.order);
+
+const eventTypeLabel = (t: TestimonialData["eventType"]): string => {
+  switch (t) {
+    case "family":
+      return "Family celebration";
+    case "social":
+      return "Social gathering";
+    case "corporate":
+      return "Corporate event";
+    case "other":
+      return "Private event";
+  }
+};
+---
+<section id={id} class="bg-[color:var(--color-clay)]/8 py-12 md:py-20 lg:py-24">
+  <div class="max-w-6xl mx-auto px-5 md:px-8">
+    <div class="max-w-[45rem]">
+      <p class="text-eyebrow uppercase tracking-[0.12em] text-accent font-semibold">WORD OF MOUTH</p>
+      <h2 class="mt-3 font-display text-display-lg text-ink">Hosts, planners, and families we've fed.</h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mt-12 md:mt-16 items-start">
+      {sorted.map((t) => (
+        <article class="flex flex-col rounded-lg bg-surface border border-ink/10 p-6 md:p-8">
+          <div
+            class="flex gap-1 text-[color:var(--color-butter-gold)]"
+            aria-label={`${t.rating} out of 5 stars`}
+          >
+            {[1, 2, 3, 4, 5].map((i) => (
+              <Star
+                className={i > t.rating ? "text-ink/20" : ""}
+                size={16}
+                fill="currentColor"
+                strokeWidth={0}
+                aria-hidden="true"
+              />
+            ))}
+          </div>
+
+          <blockquote class="mt-4 text-body-lg text-ink leading-[1.65]">
+            &ldquo;{t.quote}&rdquo;
+          </blockquote>
+
+          <footer class="mt-6">
+            <cite class="not-italic font-serif italic text-body-md text-ink">{t.clientName}</cite>
+            <span class="block mt-1 text-body-sm text-ink/60 uppercase tracking-[0.08em] font-semibold">
+              {eventTypeLabel(t.eventType)}
+            </span>
+          </footer>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
