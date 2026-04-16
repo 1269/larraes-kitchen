@@ -1,19 +1,37 @@
 ---
+import { getCollection, getEntry } from "astro:content";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import HeroSection from "@/components/sections/HeroSection.astro";
+import AboutSection from "@/components/sections/AboutSection.astro";
+import MenuSection from "@/components/sections/MenuSection.astro";
+import PackagesSection from "@/components/sections/PackagesSection.astro";
+import GallerySection from "@/components/sections/GallerySection.astro";
+import TestimonialsSection from "@/components/sections/TestimonialsSection.astro";
+import FaqSection from "@/components/sections/FaqSection.astro";
+import ContactSection from "@/components/sections/ContactSection.astro";
+
 export const prerender = true;
-import "@fontsource/playfair-display/400.css";
-import "@fontsource/playfair-display/700.css";
-import "@fontsource/work-sans/400.css";
-import "@fontsource/work-sans/600.css";
-import "../styles/global.css";
+
+const site = await getEntry("site", "site");
+const hero = await getEntry("hero", "hero");
+const about = await getEntry("about", "about");
+const menu = (await getCollection("menu")).sort((a, b) => a.data.order - b.data.order);
+const packages = (await getCollection("packages")).sort((a, b) => a.data.order - b.data.order);
+const testimonials = (await getCollection("testimonials")).sort((a, b) => a.data.order - b.data.order);
+const faqGroups = (await getCollection("faq")).sort((a, b) => a.data.order - b.data.order);
+const gallery = (await getCollection("gallery")).sort((a, b) => a.data.order - b.data.order);
+
+if (!site || !hero || !about) {
+  throw new Error("Required single-entry collection missing: site / hero / about");
+}
 ---
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Larrae's Kitchen</title>
-  </head>
-  <body class="bg-surface text-ink font-sans">
-    <h1 class="font-display text-display-xl text-primary">Larrae's Kitchen</h1>
-    <p class="font-serif">Authentic soul food catering — site under construction.</p>
-  </body>
-</html>
+<BaseLayout site={site.data}>
+  <HeroSection id="hero" hero={hero.data} />
+  <AboutSection id="about" about={about.data} />
+  <MenuSection id="menu" menu={menu.map((m) => m.data)} />
+  <PackagesSection id="packages" packages={packages.map((p) => p.data)} />
+  <GallerySection id="gallery" gallery={gallery.map((g) => g.data)} />
+  <TestimonialsSection id="testimonials" testimonials={testimonials.map((t) => t.data)} />
+  <FaqSection id="faq" faqGroups={faqGroups.map((f) => f.data)} />
+  <ContactSection id="contact" site={site.data} />
+</BaseLayout>
