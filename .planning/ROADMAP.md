@@ -39,7 +39,7 @@ Five phases move Larrae's Kitchen from empty repo to first real booking. Phase 1
   - [x] 01-04-PLAN.md — Author 8 Zod schemas, pricing stub, Content Collections config, and `.gitkeep` directory skeleton
   - [x] 01-05-PLAN.md — Install dev tooling (Biome, Vitest, Playwright, lefthook) and author smoke test
   - [x] 01-06-PLAN.md — Author CI workflows, CODEOWNERS, image-budget script, branch-protection script
-  - [ ] 01-07-PLAN.md — Run `vercel link`, register env vars, verify preview URL, lock `main` branch protection
+  - [x] 01-07-PLAN.md — Run `vercel link`, register env vars, verify preview URL, lock `main` branch protection
 **UI hint**: no
 
 ### Phase 2: Content & Static Sections
