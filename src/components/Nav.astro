@@ -1,0 +1,93 @@
+---
+import { Button } from "@/components/ui/button";
+import NavController from "./NavController.tsx";
+import type { SiteData } from "@/lib/schemas/site";
+
+interface Props {
+  site: SiteData;
+}
+const { site } = Astro.props;
+
+const links = [
+  { href: "#menu", label: "Menu" },
+  { href: "#packages", label: "Packages" },
+  { href: "#gallery", label: "Gallery" },
+  { href: "#about", label: "About" },
+  { href: "#testimonials", label: "Testimonials" },
+  { href: "#faq", label: "FAQ" },
+  { href: "#contact", label: "Contact" },
+];
+---
+<nav
+  aria-label="Primary"
+  class="fixed top-0 inset-x-0 z-40 transition-colors duration-300 ease-out motion-reduce:transition-none"
+  data-nav-state="transparent"
+  data-nav-root
+>
+  <div class="h-16 md:h-20 px-5 md:px-8 flex items-center justify-between">
+    <a href="#top" class="font-display text-xl md:text-2xl nav-text-color" data-nav-wordmark>
+      {site.name}
+    </a>
+
+    <ul class="hidden lg:flex items-center gap-6">
+      {links.map((l) => (
+        <li>
+          <a
+            href={l.href}
+            data-section-link={l.href.slice(1)}
+            class="text-body-sm font-semibold uppercase tracking-[0.08em] nav-link-color focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-4 rounded-sm"
+          >
+            {l.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    <div class="flex items-center gap-3">
+      <Button
+        size="default"
+        className="hidden lg:inline-flex rounded-full px-6 bg-primary text-white hover:bg-primary/90"
+        asChild
+      >
+        <a href="#inquiry">Get a Quote</a>
+      </Button>
+      <NavController client:load links={links} siteName={site.name} />
+    </div>
+  </div>
+</nav>
+
+<style>
+  /* Styled via data-nav-state attribute set by NavController island. */
+  nav[data-nav-state="transparent"] { background: transparent; }
+  nav[data-nav-state="transparent"] .nav-text-color { color: white; }
+  nav[data-nav-state="transparent"] .nav-link-color { color: rgba(255, 255, 255, 0.9); }
+  nav[data-nav-state="transparent"] .nav-link-color:hover { color: white; }
+
+  nav[data-nav-state="solid"] {
+    background: color-mix(in oklab, var(--color-surface) 95%, transparent);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 1px 0 rgba(28, 27, 25, 0.06);
+  }
+  nav[data-nav-state="solid"] .nav-text-color { color: var(--color-ink); }
+  nav[data-nav-state="solid"] .nav-link-color { color: color-mix(in oklab, var(--color-ink) 80%, transparent); }
+  nav[data-nav-state="solid"] .nav-link-color:hover { color: var(--color-ink); }
+
+  /* Active section underline (D-14). Applied by NavController via data-active attribute. */
+  nav [data-section-link][data-active="true"] {
+    color: var(--color-primary);
+    position: relative;
+  }
+  nav [data-section-link][data-active="true"]::after {
+    content: "";
+    display: block;
+    height: 2px;
+    background: var(--color-primary);
+    margin-top: 4px;
+  }
+  nav[data-nav-state="transparent"] [data-section-link][data-active="true"] {
+    color: white;
+  }
+  nav[data-nav-state="transparent"] [data-section-link][data-active="true"]::after {
+    background: white;
+  }
+</style>
