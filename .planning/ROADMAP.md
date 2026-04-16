@@ -55,10 +55,10 @@ Five phases move Larrae's Kitchen from empty repo to first real booking. Phase 1
   6. NAP (name/address/phone) appears identically in Contact, footer, and anywhere else it surfaces — sourced from a single canonical `site.md`
 **Key risks addressed**: C5 groundwork (single canonical `site.md` for NAP), H9 (hero text-over-image contrast failure), H10 (photography-heavy page with no crawlable text), H1 (photography LCP via `astro:assets` everywhere)
 **Plans**: 9 plans
-  - [ ] 02-01-PLAN.md — site.md + formatPhone util + BaseLayout.astro scaffold
-  - [ ] 02-02-PLAN.md — hero.md + about.md content authoring
-  - [ ] 02-03-PLAN.md — menu items (11 files) + package tiers (Small/Medium/Large)
-  - [ ] 02-04-PLAN.md — testimonials + FAQ groups + gallery entries content
+  - [x] 02-01-PLAN.md — site.md + formatPhone util + BaseLayout.astro scaffold
+  - [x] 02-02-PLAN.md — hero.md + about.md content authoring
+  - [x] 02-03-PLAN.md — menu items (11 files) + package tiers (Small/Medium/Large)
+  - [x] 02-04-PLAN.md — testimonials + FAQ groups + gallery entries content
   - [ ] 02-05-PLAN.md — Nav.astro + NavController.tsx island + Footer.astro (wires into BaseLayout)
   - [ ] 02-06-PLAN.md — Hero, About, Contact section components
   - [ ] 02-07-PLAN.md — Menu section + MenuTabs island + Packages section
