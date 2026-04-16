@@ -12,23 +12,22 @@ Convert visitors into booked events by making Benicia's only authentic soul food
 
 ### Validated
 
-(None yet — ship to validate)
+- [x] Single-page scroll site with Hero, About, Menu, Packages, Gallery, Testimonials, FAQ, Contact sections — *Validated in Phase 2: content-static-sections (build passes, 8 sections composed in LAYT-04 order, UAT approved)*
+- [x] Photography-led hero with cinematic soul food imagery and single primary CTA — *Validated in Phase 2 (HeroSection + hero.md single-entry collection)*
+- [x] About section foregrounding chef heritage and "only soul food specialist in Benicia" positioning — *Validated in Phase 2 (AboutSection + about.md 161-word heritage narrative)*
+- [x] Menu section organized by Proteins, Sides, Desserts with dietary indicators — *Validated in Phase 2 (MenuSection + MenuTabs island, 11 items, Lucide dietary icons)*
+- [x] Three tiered catering packages (Small 10–20, Medium 21–30, Large 31–75) with transparent per-person pricing — *Validated in Phase 2 (packages/*.md with STATE.md-locked guest ranges; Large 31–75 per roadmap vs original 50–75)*
+- [x] Gallery of past catering events (masonry grid + lightbox) — *Validated in Phase 2 (GallerySection + GalleryGrid React.lazy lightbox; 15 entries with explicit aspect ratios for CLS prevention)*
+- [x] Testimonials from residential, social host, and corporate clients — *Validated in Phase 2 (4 testimonials covering family/social/corporate personas per TEST-04)*
+- [x] FAQ accordion grouped by ordering, delivery, menu customization, payment — *Validated in Phase 2 (FaqSection using native <details>/<summary> for zero-JS; FAQPage JSON-LD emitted)*
+- [x] Markdown-based content pipeline (menu items, packages, testimonials, FAQs editable as repo markdown files) — *Validated in Phase 2 (Astro Content Collections with Zod frontmatter schemas; 56 content files authored)*
+- [x] Content schema compatible with an AI agent editing via GitHub — *Validated in Phase 2 (canonical site.md NAP single source; AI-editable paths)*
 
 ### Active
 
-- [ ] Single-page scroll site with Hero, About, Menu, Packages, Gallery, Testimonials, FAQ, Contact sections
-- [ ] Photography-led hero with cinematic soul food imagery and single primary CTA
-- [ ] About section foregrounding chef heritage and "only soul food specialist in Benicia" positioning
-- [ ] Menu section organized by Proteins, Sides, Desserts with dietary indicators
-- [ ] Three tiered catering packages (Small 10–20, Medium 21–30, Large 50–75) with transparent per-person pricing
-- [ ] Gallery of past catering events (masonry grid + lightbox)
-- [ ] Testimonials from residential, social host, and corporate clients
-- [ ] FAQ accordion grouped by ordering, delivery, menu customization, payment
 - [ ] Multi-step inquiry wizard: event type → guests/date → package → contact details
 - [ ] Live price estimate updating as user fills the wizard (guests × package tier)
 - [ ] Lead delivery: formatted email to Larrae + stored record for follow-up tracking
-- [ ] Markdown-based content pipeline (menu items, packages, testimonials, FAQs editable as repo markdown files)
-- [ ] Content schema compatible with an AI agent editing via GitHub
 - [ ] Mobile-first responsive design, WCAG 2.1 AA accessible
 - [ ] Local SEO foundations (LocalBusiness/Restaurant structured data, Google Business Profile alignment)
 - [ ] Production deployment with analytics and form spam protection
@@ -111,4 +110,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-15 after initialization*
+*Last updated: 2026-04-16 after Phase 2 completion (content & static sections — 9/9 plans, 56 content files, 8 section components, UAT approved)*
