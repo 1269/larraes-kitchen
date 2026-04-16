@@ -1,0 +1,74 @@
+---
+import { Picture } from "astro:assets";
+import { Button } from "@/components/ui/button";
+import { ChevronDown } from "lucide-react";
+import type { HeroData } from "@/lib/schemas/hero";
+
+interface Props {
+  id: string;
+  hero: HeroData;
+}
+const { id, hero } = Astro.props;
+---
+<section id={id} class="relative h-screen min-h-[640px] w-full overflow-hidden">
+  {/* Hero image — THE ONLY priority image on the page (PERF-04).
+      `loading="eager"` + `decoding="async"` = LCP priority hint for Astro's <Picture>. */}
+  <Picture
+    src={hero.heroImage}
+    alt={hero.heroImageAlt}
+    width={2560}
+    height={1440}
+    widths={[640, 960, 1280, 1920, 2560]}
+    sizes="100vw"
+    formats={["avif", "webp"]}
+    loading="eager"
+    decoding="async"
+    fetchpriority="high"
+    class="absolute inset-0 h-full w-full object-cover"
+  />
+
+  {/* Scrim overlay — HERO-05 WCAG AA enforcement */}
+  <div
+    aria-hidden="true"
+    class="absolute inset-0 bg-gradient-to-t from-ink/72 via-ink/35 to-transparent"
+  />
+
+  {/* Content block */}
+  <div
+    class="relative z-10 flex h-full flex-col items-center justify-end pb-16 md:pb-20 lg:pb-24 text-center text-white px-5"
+  >
+    <span
+      class="mb-6 inline-flex items-center gap-2 rounded-full bg-[color:var(--color-butter-gold)] px-4 py-2 text-body-sm font-semibold text-ink"
+    >
+      {hero.priceChip}
+    </span>
+
+    <h1
+      class="font-display text-display-lg sm:text-[3.5rem] lg:text-display-xl max-w-[18ch] leading-[1.05]"
+    >
+      {hero.headline}
+    </h1>
+
+    {hero.subheadline && (
+      <p class="mt-4 max-w-[32ch] text-body-lg text-white/90">
+        {hero.subheadline}
+      </p>
+    )}
+
+    <Button
+      size="lg"
+      className="rounded-full px-8 py-3 mt-8 text-body-md font-semibold bg-primary text-white hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-4"
+      asChild
+    >
+      <a href="#inquiry">{hero.ctaText}</a>
+    </Button>
+  </div>
+
+  {/* Scroll-down affordance — decorative, reduced-motion safe */}
+  <div
+    aria-hidden="true"
+    class="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/70 motion-safe:animate-bounce"
+  >
+    <ChevronDown className="size-6" />
+  </div>
+</section>
