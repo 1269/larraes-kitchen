@@ -35,8 +35,10 @@
     "radix-ui": "^1.4.3",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
+    "react-photo-album": "^3.6.0",
     "tailwind-merge": "^3.5.0",
     "tailwindcss": "^4.2.2",
+    "yet-another-react-lightbox": "^3.31.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
