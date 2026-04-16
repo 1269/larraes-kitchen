@@ -1,0 +1,98 @@
+---
+import { Picture } from "astro:assets";
+import { Button } from "@/components/ui/button";
+import { formatPhone } from "@/lib/format";
+import type { SiteData } from "@/lib/schemas/site";
+
+interface Props {
+  id: string;
+  site: SiteData;
+}
+const { id, site } = Astro.props;
+
+// Static map image lives at public/images/service-area-map.jpg — may be absent
+// in placeholder era; the descriptive alt + caption communicate meaning if so.
+const mapImagePath = "/images/service-area-map.jpg";
+const serviceAreaLine = site.serviceArea.join(" · ");
+---
+<section id={id} class="bg-surface py-12 md:py-20 lg:py-24">
+  <div class="max-w-6xl mx-auto px-5 md:px-8">
+    <div class="max-w-[45rem]">
+      <p class="text-eyebrow uppercase tracking-[0.12em] text-accent font-semibold">
+        GET IN TOUCH
+      </p>
+      <h2 class="mt-3 font-display text-display-lg text-ink">
+        Serving Benicia and the surrounding bay.
+      </h2>
+    </div>
+
+    <div
+      class="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 mt-12 md:mt-16 items-start"
+    >
+      {/* Left: NAP details — all from site.md (C5 single source of truth) */}
+      <div>
+        <div>
+          <p class="text-eyebrow uppercase tracking-[0.12em] text-accent font-semibold">
+            CALL
+          </p>
+          <a
+            href={`tel:${site.phone}`}
+            class="mt-1 block font-serif italic text-display-md text-ink hover:text-primary focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-4 rounded-sm"
+          >
+            {formatPhone(site.phone)}
+          </a>
+        </div>
+
+        <div class="mt-8">
+          <p class="text-eyebrow uppercase tracking-[0.12em] text-accent font-semibold">
+            EMAIL
+          </p>
+          <a
+            href={`mailto:${site.email}`}
+            class="mt-1 block font-serif italic text-display-md text-ink hover:text-primary focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-4 rounded-sm break-all"
+          >
+            {site.email}
+          </a>
+        </div>
+
+        <div class="mt-10">
+          <p class="text-eyebrow uppercase tracking-[0.12em] text-accent font-semibold">
+            SERVICE AREA
+          </p>
+          <p class="mt-1 text-body-lg text-ink">{serviceAreaLine}</p>
+        </div>
+
+        <div class="mt-8">
+          <p class="text-body-md text-ink/70">{site.responseTime}</p>
+        </div>
+
+        <Button
+          size="lg"
+          className="rounded-full mt-10 bg-primary text-white hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-4"
+          asChild
+        >
+          <a href="#inquiry">Start a quote</a>
+        </Button>
+      </div>
+
+      {/* Right: static service-area map image */}
+      <div>
+        <Picture
+          src={mapImagePath}
+          alt={`Map showing our service area: ${site.address.city} and surrounding Bay Area cities.`}
+          width={960}
+          height={720}
+          widths={[480, 640, 960]}
+          sizes="(min-width: 768px) 50vw, 100vw"
+          formats={["avif", "webp"]}
+          loading="lazy"
+          decoding="async"
+          class="w-full rounded-lg aspect-[4/3] object-cover border border-ink/10"
+        />
+        <p class="mt-3 text-body-sm text-ink/60 text-center">
+          Based in {site.address.city}, serving the greater East Bay.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
