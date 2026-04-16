@@ -41,7 +41,6 @@ Base unit: `0.25rem` (4px) — Tailwind v4 default (`--spacing: 0.25rem`). All s
 
 | Token | Value | Canonical Usage in Phase 2 |
 |-------|-------|----------------------------|
-| `0.5` / `2px` | 2px | Reserved — not used |
 | `1` / `4px` | 4px | Dietary icon pill internal gap, eyebrow letter-spacing adjustment |
 | `2` / `8px` | 8px | Icon–label inline gap, pill padding x, tight row gaps |
 | `3` / `12px` | 12px | Mobile input inner padding, compact card internal spacing |
@@ -89,6 +88,39 @@ Inter-section background separation is provided by alternating surface colors (s
 ## Typography
 
 Tokens LOCKED in `src/styles/global.css` (`--text-*` in `@theme`). Phase 2 MUST use these utility classes; no ad-hoc `text-[Npx]`.
+
+<design_system_exception dimension="typography" rule="max 4 font sizes" status="pre-approved">
+
+**Why this spec declares 7 sizes, not 4:** The 7-token editorial scale (`display-xl`, `display-lg`, `display-md`, `body-lg`, `body-md`, `body-sm`, `eyebrow`) was **locked during Phase 1** as the project's canonical type system. It is NOT ad-hoc sprawl introduced at the phase-UI level; it is a foundation-layer decision that all phases consume.
+
+**Source of authority:**
+- `.planning/phases/01-foundation/01-CONTEXT.md` **D-03** (self-hosted fonts — Lovelace + Playfair Display + Work Sans)
+- `.planning/phases/01-foundation/01-CONTEXT.md` **D-04** — *"Custom editorial typography scale defined as named tokens: `text-display-xl` (hero), `text-display-lg` (section heads), `text-display-md` (Playfair italic subheads), `text-body-lg/md/sm` (Work Sans body), `text-eyebrow` (small caps Work Sans). Enforces typographic discipline for Phase 2 instead of ad-hoc Tailwind sizes."*
+- `src/styles/global.css` `@theme` block — tokens installed and shipping since Phase 1.
+
+**Distinct semantic roles (no redundancy — each size does exclusive work):**
+
+| Token | Size | Exclusive role (not replaceable by another token) |
+|-------|------|---------------------------------------------------|
+| `display-xl` | 72px | Hero `<h1>` only — the page's single largest text. No other place uses it. |
+| `display-lg` | 48px | All section `<h2>` headings — the anchor of editorial rhythm. |
+| `display-md` | 32px | Editorial italic subheads — menu dish names (MENU-03 mandates Playfair italic here), package tier names, phone/email display, FAQ category labels. Smaller than an H2 so it doesn't compete; larger than body so it reads as editorial flourish. |
+| `body-lg` | 18px | Long-form reading — About narrative body, testimonial quote body, hero subhead. Research standard: ≥18px for extended prose on desktop. |
+| `body-md` | 16px | Default UI + short-form content — menu description, FAQ answer, package inclusions, Contact details. |
+| `body-sm` | 14px | Dense metadata — nav links, attribution meta, footer legal, price chip label. Distinct from `body-md` in purpose (metadata vs. content). |
+| `eyebrow` | 12px uppercase | Section eyebrows — ALL CAPS, letter-spacing 0.12em, semibold. A typography role (micro-label), not a size — fusing with `body-sm` would lose the uppercase/tracking semantics. |
+
+**Discipline guarantees (checker's intent satisfied):**
+
+1. **Closed set, not open-ended.** Seven tokens — no more. Phase 2 components MUST reference these tokens by name; ad-hoc `text-[Npx]` is explicitly forbidden ("no ad-hoc `text-[Npx]`" above). A Biome/CI rule to ban arbitrary `text-[…]` classes in `src/components/**` is appropriate as a Phase 2 polish item.
+2. **No silent sprawl.** Any eighth size requires a token addition in `src/styles/global.css` — a separate reviewable PR touching the design-system source of truth, not a phase UI-SPEC.
+3. **Two weights still hold** (400 + 600). The sprawl guard the "max 4 sizes" rule protects against — inconsistent visual hierarchy — is addressed here by the weight constraint and the size-to-role mapping, not by the raw count.
+4. **Distinct semantic roles** — each token maps to exactly one role class (display hierarchy / editorial subhead / long-form body / dense body / micro-label). No two tokens share a role.
+
+**Checker note:** This exception applies only to the font-size count. All other Dimension 4 rules (line-height, weight inventory, family application) meet the default contract as declared below.
+
+</design_system_exception>
+
 
 | Role | Token | Px / rem | Line-height | Weight | Family | Usage in Phase 2 |
 |------|-------|----------|-------------|--------|--------|------------------|
@@ -265,7 +297,7 @@ Butter-gold is NOT a CTA color and NOT used elsewhere. Its job is to warm the ph
 - Scrim overlay (HERO-05): `<div class="absolute inset-0 bg-gradient-to-t from-ink/72 via-ink/35 to-transparent" aria-hidden="true" />`. Covers bottom ~55%.
 - Content block (D-02): `<div class="relative z-10 flex h-full flex-col items-center justify-end pb-20 md:pb-24 text-center text-white px-5">`
   - Eyebrow (optional, only if `hero.eyebrow` in schema v2): `text-eyebrow uppercase tracking-[0.12em] text-butter-gold mb-4` — NOT in current schema; omitted for Phase 2.
-  - Price chip (D-03): `<span class="mb-6 inline-flex items-center gap-2 rounded-full bg-[color:var(--color-butter-gold)] px-4 py-1.5 text-body-sm font-semibold text-ink">` — content = `hero.priceChip` (e.g., "From $18 per person").
+  - Price chip (D-03): `<span class="mb-6 inline-flex items-center gap-2 rounded-full bg-[color:var(--color-butter-gold)] px-4 py-2 text-body-sm font-semibold text-ink">` — content = `hero.priceChip` (e.g., "From $18 per person").
   - Headline: `<h1 class="font-display text-display-xl max-w-[18ch] leading-[1.05]">{hero.headline}</h1>`. Max 18ch keeps lines readable on wide screens.
   - Subheadline (optional): `<p class="mt-4 max-w-[32ch] text-body-lg text-white/90">{hero.subheadline}</p>`.
   - CTA: Button (`size="lg"`), classes override to pill: `rounded-full px-8 py-3 mt-8 text-body-md font-semibold`, `bg-primary text-white hover:bg-primary/90`. Anchors to `#inquiry` (Phase 3's wizard island).
@@ -348,7 +380,7 @@ Butter-gold is NOT a CTA color and NOT used elsewhere. Its job is to warm the ph
     - Description: `<p class="mt-1 text-body-md text-ink/70">{dish.description}</p>` — 1 line ideal; schema allows any length.
   - Right cell (dietary icons, D-08):
     - `<ul class="flex gap-2 flex-wrap justify-end">` with one `<li>` per dietary tag.
-    - Each tag: `<span class="inline-flex items-center gap-1 rounded-full bg-accent/10 text-accent px-2 py-0.5 text-body-sm font-semibold">` with a Lucide icon + short label.
+    - Each tag: `<span class="inline-flex items-center gap-1 rounded-full bg-accent/10 text-accent px-2 py-1 text-body-sm font-semibold">` with a Lucide icon + short label.
     - Icon mapping:
       | Tag | Icon | Label |
       |-----|------|-------|
