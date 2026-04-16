@@ -63,7 +63,7 @@ Five phases move Larrae's Kitchen from empty repo to first real booking. Phase 1
   - [x] 02-06-PLAN.md — Hero, About, Contact section components
   - [x] 02-07-PLAN.md — Menu section + MenuTabs island + Packages section
   - [x] 02-08-PLAN.md — Gallery section + GalleryGrid island + Testimonials + FAQ sections
-  - [ ] 02-09-PLAN.md — Compose index.astro (LAYT-04 order) + human UAT checkpoint
+  - [x] 02-09-PLAN.md — Compose index.astro (LAYT-04 order) + human UAT checkpoint
 **UI hint**: yes
 
 ### Phase 3: Inquiry Wizard & Lead Pipeline
