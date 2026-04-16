@@ -1,0 +1,45 @@
+---
+import "@fontsource/playfair-display/400.css";
+import "@fontsource/playfair-display/400-italic.css";
+import "@fontsource/playfair-display/700.css";
+import "@fontsource/work-sans/400.css";
+import "@fontsource/work-sans/600.css";
+import "../styles/global.css";
+// TODO(02-05): import Nav from "@/components/Nav.astro";
+// TODO(02-05): import Footer from "@/components/Footer.astro";
+import type { SiteData } from "@/lib/schemas/site";
+
+interface Props {
+  site: SiteData;
+  title?: string;
+  description?: string;
+}
+const { site, title = site.name, description } = Astro.props;
+---
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <style is:global>
+      html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+      @media (prefers-reduced-motion: reduce) {
+        html { scroll-behavior: auto; }
+      }
+    </style>
+  </head>
+  <body class="bg-surface text-ink font-sans">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-surface focus:text-ink focus:border focus:border-primary focus:rounded-sm"
+    >
+      Skip to content
+    </a>
+    {/* TODO(02-05): <Nav site={site} /> */}
+    <main id="main">
+      <slot />
+    </main>
+    {/* TODO(02-05): <Footer site={site} /> */}
+  </body>
+</html>
