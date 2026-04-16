@@ -9,3 +9,21 @@
 .env.production
 .DS_Store
 Thumbs.db
+
+# Astro
+.astro/
+dist/
+
+# Vercel
+.vercel/
+
+# Env
+.env
+.env.local
+
+# Playwright
+playwright-report/
+test-results/
+
+# Misc
+.cache/
