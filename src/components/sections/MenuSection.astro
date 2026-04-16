@@ -1,0 +1,147 @@
+---
+import { Image } from "astro:assets";
+import MenuTabs from "@/components/MenuTabs.tsx";
+import { Leaf, MilkOff, Nut, Sprout, WheatOff } from "lucide-react";
+import type { MenuItem } from "@/lib/schemas/menu";
+
+interface Props {
+  id: string;
+  menu: MenuItem[];
+}
+const { id, menu } = Astro.props;
+
+const categories = [
+  { key: "proteins", label: "Proteins" },
+  { key: "sides", label: "Sides" },
+  { key: "desserts", label: "Desserts" },
+] as const;
+
+const grouped = Object.fromEntries(
+  categories.map((c) => [
+    c.key,
+    menu.filter((m) => m.category === c.key).sort((a, b) => a.order - b.order),
+  ]),
+) as Record<(typeof categories)[number]["key"], MenuItem[]>;
+
+// Category hero image = first item with `photo` set in that category (UI-SPEC § 4 LOCKED)
+const categoryHero = (cat: string) =>
+  grouped[cat as keyof typeof grouped]?.find((m) => m.photo && m.photoAlt);
+
+// Dietary icon map
+const iconFor = (tag: string) => {
+  switch (tag) {
+    case "vegetarian":
+      return { Icon: Leaf, label: "Veg" };
+    case "vegan":
+      return { Icon: Sprout, label: "Vegan" };
+    case "gluten-free":
+      return { Icon: WheatOff, label: "GF" };
+    case "dairy-free":
+      return { Icon: MilkOff, label: "DF" };
+    case "nut-free":
+      return { Icon: Nut, label: "NF" };
+    default:
+      return null;
+  }
+};
+---
+<section id={id} class="bg-surface py-12 md:py-20 lg:py-24">
+  <div class="max-w-4xl mx-auto px-5 md:px-8">
+    <div class="max-w-[45rem]">
+      <p class="text-eyebrow uppercase tracking-[0.12em] text-accent font-semibold">THE MENU</p>
+      <h2 class="mt-3 font-display text-display-lg text-ink">From our kitchen to your table.</h2>
+      <p class="mt-4 text-body-md text-ink/70 max-w-prose">
+        Seasonal selections tuned for your event. Full menu customization available on request.
+      </p>
+    </div>
+
+    {/* Tab list (server-rendered shell; hydrated by MenuTabs) */}
+    <div role="tablist" aria-label="Menu categories" class="mt-10 flex justify-center gap-8" data-menu-tablist>
+      {categories.map((c, i) => (
+        <button
+          type="button"
+          role="tab"
+          id={`menu-tab-${c.key}`}
+          aria-selected={i === 0 ? "true" : "false"}
+          aria-controls={`menu-panel-${c.key}`}
+          data-menu-tab={c.key}
+          class:list={[
+            "font-sans text-body-sm font-semibold uppercase tracking-[0.08em] pb-2 min-h-[44px] px-2",
+            "focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-4 rounded-sm",
+            "transition-colors duration-200 motion-reduce:transition-none",
+            i === 0 ? "text-ink border-b-2 border-primary" : "text-ink/50 hover:text-ink/70",
+          ]}
+        >
+          {c.label}
+        </button>
+      ))}
+    </div>
+
+    {/* Panels — all rendered in DOM; MenuTabs toggles `hidden` attribute */}
+    {categories.map((c, i) => {
+      const items = grouped[c.key];
+      const hero = categoryHero(c.key);
+      return (
+        <div
+          role="tabpanel"
+          id={`menu-panel-${c.key}`}
+          aria-labelledby={`menu-tab-${c.key}`}
+          data-category={c.key}
+          data-menu-panel={c.key}
+          hidden={i !== 0}
+        >
+          {hero && hero.photo && hero.photoAlt && (
+            <div class="mt-8 mb-10 max-w-2xl mx-auto">
+              <Image
+                src={hero.photo}
+                alt={hero.photoAlt}
+                width={1280}
+                height={853}
+                widths={[640, 960, 1280]}
+                sizes="(min-width: 768px) 640px, 100vw"
+                format="avif"
+                loading="lazy"
+                decoding="async"
+                class="w-full rounded-sm aspect-[3/2] object-cover"
+                inferSize={false}
+              />
+            </div>
+          )}
+
+          <ul class="mt-8">
+            {items.map((item) => (
+              <li class="grid grid-cols-[1fr_auto] gap-6 items-baseline py-4 border-b border-ink/10 last:border-b-0">
+                <div>
+                  <h3 class="font-serif italic text-display-md text-ink">{item.name}</h3>
+                  <p class="mt-1 text-body-md text-ink/70">{item.description}</p>
+                </div>
+                {item.dietary.length > 0 && (
+                  <ul class="flex gap-2 flex-wrap justify-end">
+                    {item.dietary.map((d) => {
+                      const icon = iconFor(d);
+                      if (!icon) return null;
+                      const { Icon, label } = icon;
+                      return (
+                        <li>
+                          <span
+                            class="inline-flex items-center gap-1 rounded-full bg-accent/10 text-accent px-2 py-1 text-body-sm font-semibold"
+                            aria-label={d}
+                          >
+                            <Icon className="size-4" aria-hidden="true" />
+                            <span class="hidden sm:inline">{label}</span>
+                          </span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      );
+    })}
+
+    <MenuTabs client:visible />
+  </div>
+</section>
