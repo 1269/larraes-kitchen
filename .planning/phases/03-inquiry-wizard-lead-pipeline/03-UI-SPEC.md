@@ -59,16 +59,18 @@ Declared values (multiples of 4; source: existing Phase 2 component conventions 
 
 Sizes and weights are fully declared in `src/styles/global.css` `@theme` (Phase 1 D-03/D-04). Wizard uses the subset below — no new type tokens introduced in Phase 3.
 
+**Wizard type scale: exactly 4 distinct pixel sizes — 14, 16, 18, 32.** The 12px `text-eyebrow` token remains available for page-level section eyebrows outside the wizard, but is deliberately excluded from the wizard surface to keep the modal's type hierarchy tight.
+
 | Role | Token | Size | Weight | Line Height | Wizard Usage |
 |------|-------|------|--------|-------------|--------------|
 | Step heading (H2 per step) | `font-display text-display-md` | 32px (2rem) | 400 (Lovelace is a single weight) | 1.15 | "Tell us about your event", "How many, and when?", "Pick a package", "How should we reach you?", and "Thanks, {name} — your request is in." on confirmation |
-| Step subtitle / micro-label | `text-eyebrow uppercase tracking-[0.12em]` | 12px (0.75rem) | 600 | 1.3 | "STEP 1 OF 4", "STEP 2 OF 4", … above each step heading — matches `ContactSection.astro` eyebrow pattern (`text-accent font-semibold`) |
+| Step subtitle / micro-label (eyebrow) | `text-body-sm uppercase tracking-[0.12em] font-semibold` | 14px (0.875rem) | 600 | 1.5 | "STEP 1 OF 4", "STEP 2 OF 4", … above each step heading. Uppercase + tight tracking + semibold carry the eyebrow signal; font size is **not** doing that work here so the wizard keeps a 4-size scale. Color: `text-accent` (deep amber) to match the site-wide eyebrow language. |
 | Body (default) | `text-body-md` | 16px (1rem) | 400 | 1.5 | Field labels, helper text, tile descriptors, chip labels, sticky-bar primary line, confirmation recap rows. **16px floor prevents iOS zoom on input focus (WIZ-07 compliance).** |
 | Body large (emphasis) | `text-body-lg` | 18px (1.125rem) | 400 | 1.5 | Sticky-bar estimate range (visual anchor line), confirmation submission ID `LK-XXXXXX` display |
-| Body small (helper / meta) | `text-body-sm` | 14px (0.875rem) | 400 | 1.5 | Inline validation error text, lead-time + blackout-date hint below date picker, "required" markers, "recommended for N guests" sub-caption on Step 3 cards, "Leave the quote wizard?" confirmation body |
+| Body small (helper / meta / eyebrow) | `text-body-sm` | 14px (0.875rem) | 400 (600 when used as eyebrow) | 1.5 | Inline validation error text, lead-time + blackout-date hint below date picker, "required" markers, "recommended for N guests" sub-caption on Step 3 cards, "Leave the quote wizard?" confirmation body. Also the eyebrow role above. |
 | Italic serif (price) | `font-serif italic text-display-md` | 32px (2rem) | 400 italic | 1.15 | Tier price range inside Step 3 cards (e.g. "$20–$26 per person") — mirrors existing `PackagesSection.astro` italic-price treatment for brand continuity |
 
-**Weights declared: 2 total.** Work Sans at **400 (regular)** for body, and **600 (semibold)** for field labels, chip active state, stepper active state, and CTA text. Lovelace (display) ships at a single weight — not counted as a separate weight decision. Playfair Display used italic for prices only.
+**Weights declared: 2 total.** Work Sans at **400 (regular)** for body, and **600 (semibold)** for field labels, chip active state, stepper active state, eyebrow labels, and CTA text. Lovelace (display) ships at a single weight — not counted as a separate weight decision. Playfair Display used italic for prices only.
 
 **Heading line-height: 1.15** (CSS: `--text-display-md` inherits the declared `1.05` for `display-xl`; step headings use `leading-tight` utility = 1.25 explicitly to avoid cramped ascenders of Lovelace at 32px — executor applies `leading-tight` on step `<h2>`).
 
@@ -122,6 +124,12 @@ Sizes and weights are fully declared in `src/styles/global.css` `@theme` (Phase 
 | Dialog close (top-right icon button) | `Close` (visually an X; `aria-label="Close quote wizard"`) |
 | Confirmation view primary action | `Back to site` |
 | Estimate bar secondary CTA (none — display-only) | — |
+
+**"Back" label rationale (Dimension 1 non-blocking flag):** The single-word `Back` on Steps 2–4 is an intentional departure from the noun-verb pattern used on primary CTAs. Rationale:
+1. In a linear modal wizard with a visible progress stepper, the directional signal is already carried by the stepper — adding "Back to guests" / "Back to package" is redundant with the numbered step breadcrumbs overhead.
+2. Consistency across steps: a single stable secondary-action label reduces cognitive load on return visits.
+3. The primary-action (green, full-width on mobile) already carries the noun'd hand-off ("Next — pick your package"), so the secondary slot can stay compact and the CTA stays the visual anchor.
+4. `Back` universally means "previous step" in the Radix Dialog focus trap context (WCAG understandable).
 
 ### Step headings and subtitles
 
@@ -416,7 +424,7 @@ The following analytics events are fired client-side by the wizard. Event naming
 
 ```
 Step headings       → font-display text-display-md text-ink leading-tight
-Step eyebrow        → text-eyebrow uppercase tracking-[0.12em] text-accent font-semibold
+Step eyebrow        → text-body-sm uppercase tracking-[0.12em] text-accent font-semibold
 Body copy           → text-body-md text-ink
 Helper / meta       → text-body-sm text-ink/60
 Error text          → text-body-sm text-[color:var(--color-southern-red)] font-semibold
@@ -431,13 +439,15 @@ Outline CTA (Back)  → variant="ghost" text-primary hover:bg-primary/10
 Disabled button     → opacity-50 pointer-events-none (shadcn default) + bg-ink/10 text-ink/40 override
 Chip idle           → bg-white border border-ink/20 text-ink min-h-[44px]
 Chip selected       → bg-primary text-white border-transparent min-h-[44px]
-Recommended badge   → bg-[color:var(--color-butter-gold)] text-ink text-eyebrow uppercase font-semibold
+Recommended badge   → bg-[color:var(--color-butter-gold)] text-ink text-body-sm uppercase tracking-[0.12em] font-semibold
 Error alert block   → bg-[color:var(--color-southern-red)]/10 border border-[color:var(--color-southern-red)]/30 text-[color:var(--color-southern-red)] rounded-lg p-4
 Modal backdrop      → bg-ink/72 backdrop-blur-sm
 Focus ring          → focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-4
 Submission ID       → font-mono text-body-lg text-ink
 Sticky bar surface  → bg-white border-t border-ink/10 shadow-[0_-2px_8px_rgba(0,0,0,0.06)]
 ```
+
+**Note on `text-eyebrow`:** The 12px `text-eyebrow` token remains declared in `src/styles/global.css` for page-level section eyebrows (Phase 2 section headers outside the wizard). Within the wizard type scale (this phase), it is deliberately replaced by `text-body-sm uppercase tracking-[0.12em] font-semibold` so the modal keeps exactly 4 distinct font sizes (14 / 16 / 18 / 32 px). If executor sees `text-eyebrow` referenced anywhere inside wizard components during implementation, substitute the `text-body-sm uppercase tracking-[0.12em] font-semibold` combo instead.
 
 ---
 
