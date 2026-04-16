@@ -5,8 +5,8 @@ import "@fontsource/playfair-display/700.css";
 import "@fontsource/work-sans/400.css";
 import "@fontsource/work-sans/600.css";
 import "../styles/global.css";
-// TODO(02-05): import Nav from "@/components/Nav.astro";
-// TODO(02-05): import Footer from "@/components/Footer.astro";
+import Nav from "@/components/Nav.astro";
+import Footer from "@/components/Footer.astro";
 import type { SiteData } from "@/lib/schemas/site";
 
 interface Props {
@@ -36,10 +36,10 @@ const { site, title = site.name, description } = Astro.props;
     >
       Skip to content
     </a>
-    {/* TODO(02-05): <Nav site={site} /> */}
+    <Nav site={site} />
     <main id="main">
       <slot />
     </main>
-    {/* TODO(02-05): <Footer site={site} /> */}
+    <Footer site={site} />
   </body>
 </html>
