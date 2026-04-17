@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { leadSchema, type LeadInput } from "./lead";
+import { type LeadInput, leadSchema } from "./lead";
 
 /** Minimal valid lead — mutate specific fields to construct failure cases. */
-function validLead(overrides: Partial<Record<keyof LeadInput, unknown>> = {}): Record<string, unknown> {
+function validLead(
+  overrides: Partial<Record<keyof LeadInput, unknown>> = {},
+): Record<string, unknown> {
   return {
     eventType: "family",
     guestCount: 25,
@@ -37,7 +39,8 @@ describe("leadSchema", () => {
     const result = leadSchema.safeParse(rest);
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error.issues[0].path).toEqual(["eventType"]);
+      const firstIssue = result.error.issues[0];
+      expect(firstIssue?.path).toEqual(["eventType"]);
     }
   });
 
@@ -79,7 +82,10 @@ describe("leadSchema", () => {
 
   it("rejects idempotencyKey: 'not-a-uuid' but accepts a valid v4 UUID", () => {
     expect(leadSchema.safeParse(validLead({ idempotencyKey: "not-a-uuid" })).success).toBe(false);
-    expect(leadSchema.safeParse(validLead({ idempotencyKey: "550e8400-e29b-41d4-a716-446655440000" })).success).toBe(true);
+    expect(
+      leadSchema.safeParse(validLead({ idempotencyKey: "550e8400-e29b-41d4-a716-446655440000" }))
+        .success,
+    ).toBe(true);
   });
 
   it("rejects packageId: 'xl' but accepts small | medium | large | custom", () => {
