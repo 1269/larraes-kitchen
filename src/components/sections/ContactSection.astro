@@ -1,6 +1,5 @@
 ---
 import { Picture } from "astro:assets";
-import { Button } from "@/components/ui/button";
 import { formatPhone } from "@/lib/format";
 import type { SiteData } from "@/lib/schemas/site";
 
@@ -66,13 +65,15 @@ const serviceAreaLine = site.serviceArea.join(" · ");
           <p class="text-body-md text-ink/70">{site.responseTime}</p>
         </div>
 
-        <Button
-          size="lg"
-          className="rounded-full mt-10 bg-primary text-white hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-4"
-          asChild
+        {/* Contact-section CTA — dispatches wizard:open (Plan 03 Task 2b). */}
+        <button
+          type="button"
+          id="contact-quote-cta"
+          data-wizard-entry="contact_section"
+          class="inline-flex items-center justify-center rounded-full mt-10 min-h-[44px] px-8 py-3 bg-primary text-white text-body-md font-semibold hover:bg-primary/90 transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-4"
         >
-          <a href="#inquiry">Start a quote</a>
-        </Button>
+          Start a quote
+        </button>
       </div>
 
       {/* Right: static service-area map image */}
@@ -96,3 +97,14 @@ const serviceAreaLine = site.serviceArea.join(" · ");
     </div>
   </div>
 </section>
+<script>
+  document
+    .getElementById("contact-quote-cta")
+    ?.addEventListener("click", () => {
+      window.dispatchEvent(
+        new CustomEvent("wizard:open", {
+          detail: { entry: "contact_section" },
+        }),
+      );
+    });
+</script>

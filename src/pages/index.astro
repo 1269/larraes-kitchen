@@ -9,6 +9,7 @@ import GallerySection from "@/components/sections/GallerySection.astro";
 import TestimonialsSection from "@/components/sections/TestimonialsSection.astro";
 import FaqSection from "@/components/sections/FaqSection.astro";
 import ContactSection from "@/components/sections/ContactSection.astro";
+import WizardDialog from "@/components/wizard/WizardDialog.astro";
 
 export const prerender = true;
 
@@ -34,4 +35,14 @@ if (!site || !hero || !about) {
   <TestimonialsSection id="testimonials" testimonials={testimonials.map((t) => t.data)} />
   <FaqSection id="faq" faqGroups={faqGroups.map((f) => f.data)} />
   <ContactSection id="contact" site={site.data} />
+  {/* Wizard mount — renders a hidden modal that opens on wizard:open CustomEvent
+      dispatched by Nav / Hero / Packages / Contact CTAs. */}
+  <WizardDialog
+    packages={packages.map((p) => p.data)}
+    site={{
+      leadTimeDays: site.data.leadTimeDays,
+      blackoutDates: site.data.blackoutDates,
+      email: site.data.email,
+    }}
+  />
 </BaseLayout>

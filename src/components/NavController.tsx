@@ -182,13 +182,20 @@ export default function NavController({ links, siteName }: Props) {
             </li>
           ))}
         </ul>
-        <a
-          href="#inquiry"
-          onClick={() => setDrawerOpen(false)}
-          className="mt-8 inline-flex items-center justify-center rounded-full bg-primary text-white text-body-md font-semibold py-3 w-full focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-4"
+        {/* Mobile drawer quote CTA — dispatches wizard:open (Plan 03 Task 2b, CONTEXT D-01). */}
+        <button
+          type="button"
+          data-wizard-entry="nav"
+          onClick={() => {
+            setDrawerOpen(false);
+            window.dispatchEvent(
+              new CustomEvent("wizard:open", { detail: { entry: "nav" } }),
+            );
+          }}
+          className="mt-8 inline-flex items-center justify-center rounded-full bg-primary text-white text-body-md font-semibold py-3 w-full min-h-[44px] transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-4"
         >
           Get a Quote
-        </a>
+        </button>
       </div>
     </>
   );

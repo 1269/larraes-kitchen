@@ -1,5 +1,4 @@
 ---
-import { Button } from "@/components/ui/button";
 import NavController from "./NavController.tsx";
 import type { SiteData } from "@/lib/schemas/site";
 
@@ -44,16 +43,25 @@ const links = [
     </ul>
 
     <div class="flex items-center gap-3">
-      <Button
-        size="default"
-        className="hidden lg:inline-flex rounded-full px-6 bg-primary text-white hover:bg-primary/90"
-        asChild
+      {/* Desktop quote CTA — dispatches wizard:open (Plan 03 Task 2b, CONTEXT D-01). */}
+      <button
+        type="button"
+        id="nav-quote-cta"
+        data-wizard-entry="nav"
+        class="hidden lg:inline-flex items-center justify-center rounded-full px-6 min-h-[44px] bg-primary text-white text-body-sm font-semibold hover:bg-primary/90 transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-4"
       >
-        <a href="#inquiry">Get a Quote</a>
-      </Button>
+        Get a Quote
+      </button>
       <NavController client:load links={links} siteName={site.name} />
     </div>
   </div>
+  <script>
+    document.getElementById("nav-quote-cta")?.addEventListener("click", () => {
+      window.dispatchEvent(
+        new CustomEvent("wizard:open", { detail: { entry: "nav" } }),
+      );
+    });
+  </script>
 </nav>
 
 <style>

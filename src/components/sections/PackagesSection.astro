@@ -1,5 +1,4 @@
 ---
-import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
 import type { PackageData } from "@/lib/schemas/packages";
 
@@ -73,18 +72,31 @@ const sortedPackages = [...packages].sort((a, b) => a.order - b.order);
 
             <div class="flex-grow" />
 
-            {isPopular ? (
-              <Button size="lg" className={ctaClasses} asChild>
-                <a href={`#inquiry?tier=${pkg.id}`}>Select {pkg.name}</a>
-              </Button>
-            ) : (
-              <Button size="lg" variant="outline" className={ctaClasses} asChild>
-                <a href={`#inquiry?tier=${pkg.id}`}>Select {pkg.name}</a>
-              </Button>
-            )}
+            {/* Package card CTA — dispatches wizard:open with tier detail
+                (Plan 03 Task 2b). Replaces former <a href="#inquiry?tier=..."> */}
+            <button
+              type="button"
+              data-wizard-entry="package_card"
+              data-tier={pkg.id}
+              class={ctaClasses}
+            >
+              Select {pkg.name}
+            </button>
           </article>
         );
       })}
     </div>
   </div>
 </section>
+<script is:inline>
+  document.querySelectorAll('[data-wizard-entry="package_card"]').forEach((el) => {
+    el.addEventListener("click", () => {
+      const tier = el.dataset.tier;
+      window.dispatchEvent(
+        new CustomEvent("wizard:open", {
+          detail: { entry: "package_card", tier },
+        }),
+      );
+    });
+  });
+</script>
