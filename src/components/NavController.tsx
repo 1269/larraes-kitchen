@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
 import { Menu, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -31,34 +31,47 @@ export default function NavController({ links, siteName }: Props) {
     return () => io.disconnect();
   }, []);
 
-  // IntersectionObserver 2: active section highlight (D-14)
+  // IntersectionObserver 2: active section highlight (D-14).
+  // Reading-line pattern: the active band is a thin horizontal strip just below
+  // the sticky nav (top 96px) spanning ~20% of the viewport. A section is
+  // "active" when its box intersects that band. This works for sections of any
+  // height (0.4-intersection-ratio thresholds fail on sections taller than
+  // ~2.5× viewport). When multiple sections intersect the band during fast
+  // scrolls, we pick the one whose top is closest to the band — i.e. the most
+  // recently scrolled-into section.
   useEffect(() => {
     const ids = links.map((l) => l.href.slice(1));
     const sections = ids
       .map((id) => document.getElementById(id))
       .filter((s): s is HTMLElement => s !== null);
     if (sections.length === 0) return;
+    const latestEntries = new Map<string, IntersectionObserverEntry>();
     const io = new IntersectionObserver(
       (entries) => {
-        const visible = entries
+        for (const entry of entries) {
+          latestEntries.set(entry.target.id, entry);
+        }
+        const active = Array.from(latestEntries.values())
           .filter((e) => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-        if (visible[0]) setActiveSection(visible[0].target.id);
+          .sort(
+            (a, b) => Math.abs(a.boundingClientRect.top) - Math.abs(b.boundingClientRect.top),
+          )[0];
+        if (active) setActiveSection(active.target.id);
       },
-      { threshold: 0.4, rootMargin: "-80px 0px 0px 0px" },
+      { rootMargin: "-96px 0px -80% 0px", threshold: 0 },
     );
-    sections.forEach((s) => io.observe(s));
+    for (const s of sections) io.observe(s);
     return () => io.disconnect();
   }, [links]);
 
   // Sync navState + activeSection to DOM attributes for CSS-driven styling
   useEffect(() => {
-    const nav = document.querySelector<HTMLElement>('nav[data-nav-root]');
+    const nav = document.querySelector<HTMLElement>("nav[data-nav-root]");
     nav?.setAttribute("data-nav-state", navState);
   }, [navState]);
 
   useEffect(() => {
-    const nav = document.querySelector<HTMLElement>('nav[data-nav-root]');
+    const nav = document.querySelector<HTMLElement>("nav[data-nav-root]");
     if (!nav) return;
     nav.querySelectorAll<HTMLElement>("[data-section-link]").forEach((el) => {
       const id = el.getAttribute("data-section-link");
@@ -131,7 +144,11 @@ export default function NavController({ links, siteName }: Props) {
           "nav-text-color focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-4",
         )}
       >
-        {drawerOpen ? <X className="size-6" aria-hidden /> : <Menu className="size-6" aria-hidden />}
+        {drawerOpen ? (
+          <X className="size-6" aria-hidden />
+        ) : (
+          <Menu className="size-6" aria-hidden />
+        )}
       </button>
 
       {/* Backdrop */}
@@ -188,9 +205,7 @@ export default function NavController({ links, siteName }: Props) {
           data-wizard-entry="nav"
           onClick={() => {
             setDrawerOpen(false);
-            window.dispatchEvent(
-              new CustomEvent("wizard:open", { detail: { entry: "nav" } }),
-            );
+            window.dispatchEvent(new CustomEvent("wizard:open", { detail: { entry: "nav" } }));
           }}
           className="mt-8 inline-flex items-center justify-center rounded-full bg-primary text-white text-body-md font-semibold py-3 w-full min-h-[44px] transition-colors motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-4"
         >
