@@ -4,39 +4,31 @@
 // RESEARCH §Pattern 2 (Astro Action submit) + §Event-based decoupling (wizard:open).
 // T-03-17 mitigation: step-boundary validation is UX only; Plan 05 Action re-parses
 // the same leadSchema server-side (LEAD-01).
-import { zodResolver } from "@/lib/forms/zodResolver";
+
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { leadSchema, type LeadInput } from "@/lib/schemas/lead";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
+import { zodResolver } from "@/lib/forms/zodResolver";
+import { type LeadInput, leadSchema } from "@/lib/schemas/lead";
 import type { PackageData } from "@/lib/schemas/packages";
 import ConfirmationView from "./ConfirmationView";
 import DirtyDismissGuard from "./DirtyDismissGuard";
+import {
+  pushClose,
+  pushUrlState,
+  readUrlState,
+  type UrlStep,
+  type UrlTier,
+  usePopStateListener,
+} from "./hooks/useUrlSync";
+import { wizardAnalytics } from "./hooks/useWizardAnalytics";
+import { clearSnapshot, loadSnapshot, saveSnapshot } from "./hooks/useWizardPersistence";
 import ProgressIndicator from "./ProgressIndicator";
 import StickyEstimateBar from "./StickyEstimateBar";
 import Step1EventType from "./steps/Step1EventType";
 import Step2GuestsDate from "./steps/Step2GuestsDate";
 import Step3Package from "./steps/Step3Package";
 import Step4Contact, { type AlertKind } from "./steps/Step4Contact";
-import { wizardAnalytics } from "./hooks/useWizardAnalytics";
-import {
-  clearSnapshot,
-  loadSnapshot,
-  saveSnapshot,
-} from "./hooks/useWizardPersistence";
-import {
-  pushClose,
-  pushUrlState,
-  readUrlState,
-  usePopStateListener,
-  type UrlStep,
-  type UrlTier,
-} from "./hooks/useUrlSync";
 
 type EntryPoint = "hero" | "nav" | "package_card" | "contact_section";
 
@@ -56,10 +48,7 @@ interface Props {
   site: SiteProps;
 }
 
-const STEP_COPY: Record<
-  UrlStep,
-  { eyebrow: string; heading: string; subtitle: string }
-> = {
+const STEP_COPY: Record<UrlStep, { eyebrow: string; heading: string; subtitle: string }> = {
   1: {
     eyebrow: "STEP 1 OF 4",
     heading: "Tell us about your event",
@@ -78,8 +67,7 @@ const STEP_COPY: Record<
   4: {
     eyebrow: "STEP 4 OF 4",
     heading: "How should we reach you?",
-    subtitle:
-      "Larrae replies within 24 hours. Check your spam, just in case.",
+    subtitle: "Larrae replies within 24 hours. Check your spam, just in case.",
   },
 };
 
@@ -167,6 +155,9 @@ export default function WizardIsland({ packages, site }: Props) {
   }, [form]);
 
   // Focus the step heading on step change (A11Y-03 focus order 1/2/4).
+  // `currentStep` is listed intentionally: the effect must re-fire when the
+  // step changes even though the body only touches `mode` + `headingRef`.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: step-change is the trigger
   useEffect(() => {
     if (mode === "form") headingRef.current?.focus();
   }, [currentStep, mode]);
@@ -276,13 +267,17 @@ export default function WizardIsland({ packages, site }: Props) {
         // Plan 05 Task 2 shipped the real handler — this import resolves at
         // runtime to the Astro Actions barrel (src/actions/index.ts → server.submitInquiry).
         const astroActions = await import("astro:actions");
-        const actions = (astroActions as unknown as {
-          actions: { submitInquiry: (fd: FormData) => Promise<unknown> };
-          isInputError: (e: unknown) => boolean;
-        }).actions;
-        const isInputError = (astroActions as unknown as {
-          isInputError: (e: unknown) => boolean;
-        }).isInputError;
+        const actions = (
+          astroActions as unknown as {
+            actions: { submitInquiry: (fd: FormData) => Promise<unknown> };
+            isInputError: (e: unknown) => boolean;
+          }
+        ).actions;
+        const isInputError = (
+          astroActions as unknown as {
+            isInputError: (e: unknown) => boolean;
+          }
+        ).isInputError;
 
         const formData = new FormData();
         for (const [k, v] of Object.entries(values)) {
@@ -336,6 +331,14 @@ export default function WizardIsland({ packages, site }: Props) {
         setIsSubmitting(false);
       }
     },
+    // WR-02: Deps intentionally empty. All accessed identifiers are stable:
+    //   - useState setters (setIsSubmitting, setAlert, setSubmissionId,
+    //     setFinalEstimate, setMode) are guaranteed stable by React.
+    //   - wizardAnalytics is a module-level object (see useWizardAnalytics.ts).
+    //   - clearSnapshot is a module-level utility.
+    //   - The dynamic import("astro:actions") resolves the same module each call.
+    // If this callback ever needs access to Props (e.g. `site.email` for
+    // fallback alert copy), add the dep explicitly to avoid stale-closure bugs.
     [],
   );
 
@@ -390,17 +393,11 @@ export default function WizardIsland({ packages, site }: Props) {
                 {currentStep === 2 && <Step2GuestsDate site={site} />}
                 {currentStep === 3 && <Step3Package packages={packages} />}
                 {currentStep === 4 && (
-                  <Step4Contact
-                    site={site}
-                    isSubmitting={isSubmitting}
-                    alert={alert}
-                  />
+                  <Step4Contact site={site} isSubmitting={isSubmitting} alert={alert} />
                 )}
               </div>
 
-              {currentStep >= 2 && mode === "form" && (
-                <StickyEstimateBar packages={packages} />
-              )}
+              {currentStep >= 2 && mode === "form" && <StickyEstimateBar packages={packages} />}
 
               {currentStep < 4 && (
                 <div className="mt-6 flex flex-col sm:flex-row-reverse gap-3">
