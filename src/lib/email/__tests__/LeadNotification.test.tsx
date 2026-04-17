@@ -1,9 +1,9 @@
-// Source: Plan 03-05 Task 1 — React Email template for Larrae's lead notification.
+// Source: Plan 03-05 Task 1 — React Email template for Chef Larry's lead notification.
 // CONTEXT D-16 (action-first layout, tap-to-call phone), UI-SPEC §Email copy, LEAD-08.
 import { render } from "@react-email/render";
 import { describe, expect, it } from "vitest";
-import LeadNotification from "../templates/LeadNotification";
 import type { LeadRecord } from "@/lib/leads/LeadStore";
+import LeadNotification from "../templates/LeadNotification";
 
 const fixture: LeadRecord = {
   createdAt: "2026-04-17T10:00:00.000Z",
@@ -46,7 +46,7 @@ describe("LeadNotification template", () => {
     expect(html).toContain("family");
     // React SSR inserts <!-- --> between adjacent text nodes — match either
     // the raw fragment or the combined phrase after comment removal.
-    const stripped = html.replace(/<!--[^]*?-->/g, "");
+    const stripped = html.replace(/<!--[\s\S]*?-->/g, "");
     expect(stripped).toContain("15 guests");
     expect(html).toContain("2026-06-15");
     expect(html).toContain("LK-4Q7P3B");

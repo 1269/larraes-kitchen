@@ -2,8 +2,8 @@
 // CONTEXT D-17 (warm heritage voice), UI-SPEC §Email copy (opening heritage line locked), LEAD-09.
 import { render } from "@react-email/render";
 import { describe, expect, it } from "vitest";
-import LeadConfirmation from "../templates/LeadConfirmation";
 import type { LeadRecord } from "@/lib/leads/LeadStore";
+import LeadConfirmation from "../templates/LeadConfirmation";
 
 const fixture: LeadRecord = {
   createdAt: "2026-04-17T10:00:00.000Z",
@@ -35,25 +35,25 @@ const fixture: LeadRecord = {
 describe("LeadConfirmation template", () => {
   it("renders the verbatim warm heritage opening line", async () => {
     const html = await render(
-      <LeadConfirmation record={fixture} larraeEmail="hello@larraeskitchen.com" />,
+      <LeadConfirmation record={fixture} chefEmail="hello@larraeskitchen.com" />,
     );
     expect(html).toContain("We cook like family, and we treat every inquiry the same way.");
   });
 
   it("renders 'Thanks, {firstName} — your request is in.' as the heading", async () => {
     const html = await render(
-      <LeadConfirmation record={fixture} larraeEmail="hello@larraeskitchen.com" />,
+      <LeadConfirmation record={fixture} chefEmail="hello@larraeskitchen.com" />,
     );
     // React SSR interleaves `<!-- -->` between adjacent text/expression nodes;
     // strip them before substring-matching the rendered heading.
-    const stripped = html.replace(/<!--[^]*?-->/g, "");
+    const stripped = html.replace(/<!--[\s\S]*?-->/g, "");
     expect(stripped).toContain("Thanks, Ethan");
     expect(stripped).toContain("your request is in");
   });
 
   it("renders the event recap (type, guests, date, package) and estimate", async () => {
     const html = await render(
-      <LeadConfirmation record={fixture} larraeEmail="hello@larraeskitchen.com" />,
+      <LeadConfirmation record={fixture} chefEmail="hello@larraeskitchen.com" />,
     );
     expect(html).toContain("social");
     expect(html).toContain("25");
@@ -65,15 +65,15 @@ describe("LeadConfirmation template", () => {
 
   it("renders the submission ID as a reference line", async () => {
     const html = await render(
-      <LeadConfirmation record={fixture} larraeEmail="hello@larraeskitchen.com" />,
+      <LeadConfirmation record={fixture} chefEmail="hello@larraeskitchen.com" />,
     );
     expect(html).toContain("LK-4Q7P3B");
     expect(html).toContain("Reference");
   });
 
-  it("renders a mailto link to Larrae's address", async () => {
+  it("renders a mailto link to the chef's address", async () => {
     const html = await render(
-      <LeadConfirmation record={fixture} larraeEmail="hello@larraeskitchen.com" />,
+      <LeadConfirmation record={fixture} chefEmail="hello@larraeskitchen.com" />,
     );
     expect(html).toContain("mailto:hello@larraeskitchen.com");
   });
@@ -81,7 +81,7 @@ describe("LeadConfirmation template", () => {
   it("renders 'Custom quote' copy when the estimate is null", async () => {
     const custom: LeadRecord = { ...fixture, finalEstimateMin: null, finalEstimateMax: null };
     const html = await render(
-      <LeadConfirmation record={custom} larraeEmail="hello@larraeskitchen.com" />,
+      <LeadConfirmation record={custom} chefEmail="hello@larraeskitchen.com" />,
     );
     expect(html).toContain("Custom quote");
   });

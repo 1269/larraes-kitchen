@@ -73,12 +73,10 @@ export default function Step3Package({ packages }: Props) {
             }
             className="sr-only"
           />
-          <h3 className="font-serif italic text-display-md text-ink">
-            Custom quote
-          </h3>
+          <h3 className="font-serif italic text-display-md text-ink">Custom quote</h3>
           <p className="mt-3 text-body-md text-ink/90">
-            Groups of this size are unique — Larrae will tailor a menu,
-            headcount plan, and price together with you within 24 hours.
+            Groups of this size are unique — Chef Larry will tailor a menu, headcount plan, and
+            price together with you within 24 hours.
           </p>
           <span className="mt-4 inline-flex items-center gap-2 text-body-sm font-semibold text-primary">
             <Check className="size-4" aria-hidden="true" /> Selected
@@ -108,15 +106,12 @@ export default function Step3Package({ packages }: Props) {
       >
         {sorted.map((pkg) => {
           const isSelected = selected === pkg.id;
-          const isRecommended =
-            recommendedTier != null && recommendedTier.id === pkg.id;
+          const isRecommended = recommendedTier != null && recommendedTier.id === pkg.id;
           const cardClass = [
             "relative flex flex-col rounded-lg p-6 md:p-8",
             "bg-white border-2 transition-colors motion-reduce:transition-none",
             "min-h-[44px] focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-4",
-            isSelected
-              ? "border-primary bg-clay/5"
-              : "border-ink/10 hover:border-primary/40",
+            isSelected ? "border-primary bg-clay/5" : "border-ink/10 hover:border-primary/40",
           ].join(" ");
           return (
             <label key={pkg.id} className={cardClass}>
@@ -138,9 +133,7 @@ export default function Step3Package({ packages }: Props) {
                   Recommended for {guestCount} guests
                 </span>
               )}
-              <h3 className="font-serif italic text-display-md text-ink">
-                {pkg.name}
-              </h3>
+              <h3 className="font-serif italic text-display-md text-ink">{pkg.name}</h3>
               <p className="mt-1 text-body-sm font-semibold uppercase tracking-[0.08em] text-ink/60">
                 {pkg.guestRange.min}–{pkg.guestRange.max} guests
               </p>
@@ -153,10 +146,7 @@ export default function Step3Package({ packages }: Props) {
               <ul className="mt-4 space-y-2 text-body-md text-ink/90">
                 {pkg.includes.map((inc) => (
                   <li key={inc} className="flex items-start gap-2">
-                    <Check
-                      className="size-4 text-primary shrink-0 mt-1"
-                      aria-hidden="true"
-                    />
+                    <Check className="size-4 text-primary shrink-0 mt-1" aria-hidden="true" />
                     <span>{inc}</span>
                   </li>
                 ))}
@@ -170,9 +160,7 @@ export default function Step3Package({ packages }: Props) {
           );
         })}
       </div>
-      {mismatchNote && (
-        <p className="mt-3 text-body-sm text-ink/60">{mismatchNote}</p>
-      )}
+      {mismatchNote && <p className="mt-3 text-body-sm text-ink/60">{mismatchNote}</p>}
       {error && (
         <p
           id="packageId-error"

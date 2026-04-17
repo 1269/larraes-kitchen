@@ -1,30 +1,17 @@
 // Source: Plan 03-05 Task 1 — React Email template for the inquirer's confirmation.
 // CONTEXT D-17 (warm heritage voice, mirrors on-site confirmation screen) +
 // UI-SPEC §Email copy (opening heritage line LOCKED verbatim) + LEAD-09.
-import {
-  Body,
-  Container,
-  Head,
-  Heading,
-  Html,
-  Link,
-  Section,
-  Text,
-} from "@react-email/components";
+import { Body, Container, Head, Heading, Html, Link, Section, Text } from "@react-email/components";
 import type { LeadRecord } from "@/lib/leads/LeadStore";
 
 export interface LeadConfirmationProps {
   record: LeadRecord;
-  larraeEmail: string;
+  chefEmail: string;
 }
 
-export default function LeadConfirmation({
-  record,
-  larraeEmail,
-}: LeadConfirmationProps) {
+export default function LeadConfirmation({ record, chefEmail }: LeadConfirmationProps) {
   const firstName = record.name.split(/\s+/)[0] ?? record.name;
-  const hasEstimate =
-    record.finalEstimateMin != null && record.finalEstimateMax != null;
+  const hasEstimate = record.finalEstimateMin != null && record.finalEstimateMax != null;
   const estimateLabel = hasEstimate
     ? `$${record.finalEstimateMin}–$${record.finalEstimateMax}`
     : "Custom quote — we'll tailor this together";
@@ -66,17 +53,12 @@ export default function LeadConfirmation({
             >
               Thanks, {firstName} — your request is in.
             </Heading>
-            <Text
-              style={{ fontSize: 16, color: "#1C1B19", lineHeight: 1.5 }}
-            >
+            <Text style={{ fontSize: 16, color: "#1C1B19", lineHeight: 1.5 }}>
               We cook like family, and we treat every inquiry the same way.
             </Text>
-            <Text
-              style={{ fontSize: 16, color: "#1C1B19", lineHeight: 1.5 }}
-            >
-              Larrae will reply within 24 hours to confirm details and send a
-              final quote. Keep an eye on your inbox — and your spam folder,
-              just in case.
+            <Text style={{ fontSize: 16, color: "#1C1B19", lineHeight: 1.5 }}>
+              Chef Larry will reply within 24 hours to confirm details and send a final quote. Keep
+              an eye on your inbox — and your spam folder, just in case.
             </Text>
           </Section>
 
@@ -135,11 +117,8 @@ export default function LeadConfirmation({
           <Section style={{ marginTop: 24 }}>
             <Text style={{ color: "#1C1B19", fontSize: 16 }}>
               Questions? Reply here or email{" "}
-              <Link
-                href={`mailto:${larraeEmail}`}
-                style={{ color: "#2E4A2F", fontWeight: 600 }}
-              >
-                {larraeEmail}
+              <Link href={`mailto:${chefEmail}`} style={{ color: "#2E4A2F", fontWeight: 600 }}>
+                {chefEmail}
               </Link>
               .
             </Text>

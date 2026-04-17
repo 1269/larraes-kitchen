@@ -9,5 +9,5 @@ questions:
   - question: "Is there a minimum order size?"
     answer: "Our smallest package is ten guests. For parties smaller than ten, reach out and we'll help you figure out whether a package or a drop-off order fits better."
   - question: "How do I reserve a date?"
-    answer: "Start with a quote from our wizard, then Larrae follows up within 24 hours to confirm availability and send a booking agreement. A deposit secures the date."
+    answer: "Start with a quote from our wizard, then Chef Larry follows up within 24 hours to confirm availability and send a booking agreement. A deposit secures the date."
 ---

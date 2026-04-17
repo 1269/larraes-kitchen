@@ -10,12 +10,13 @@
 //   event.data.tags.which          ← "notify" | "confirm" — updates the right column
 // DO NOT rename keys. DO NOT change the "notify"/"confirm" literal values. DO NOT
 // merge the two sends without preserving distinct tag arrays.
-import { render } from "@react-email/render";
+
 import { getEntry } from "astro:content";
+import { render } from "@react-email/render";
 import { Resend } from "resend";
+import type { LeadRecord } from "@/lib/leads/LeadStore";
 import LeadConfirmation from "./templates/LeadConfirmation";
 import LeadNotification from "./templates/LeadNotification";
-import type { LeadRecord } from "@/lib/leads/LeadStore";
 
 let resendClient: Resend | null = null;
 
@@ -32,13 +33,13 @@ export function resetResendClientForTests(): void {
   resendClient = null;
 }
 
-async function getLarraeEmail(): Promise<string> {
+async function getChefEmail(): Promise<string> {
   const site = await getEntry("site", "site");
   return site?.data.email ?? "";
 }
 
 /**
- * LEAD-08 — send the action-first notification email to Larrae.
+ * LEAD-08 — send the action-first notification email to Chef Larry.
  * Subject format LOCKED per UI-SPEC §Email copy:
  *   `New quote: {name} · {eventType} · {guestCount} guests · {date}`
  *
@@ -53,14 +54,14 @@ async function getLarraeEmail(): Promise<string> {
  * and the lead record persists regardless (LEAD-05, LEAD-10).
  */
 export async function sendLeadNotification(record: LeadRecord): Promise<void> {
-  const [html, larraeEmail] = await Promise.all([
+  const [html, chefEmail] = await Promise.all([
     render(LeadNotification({ record })),
-    getLarraeEmail(),
+    getChefEmail(),
   ]);
   const subject = `New quote: ${record.name} · ${record.eventType} · ${record.guestCount} guests · ${record.eventDate}`;
   await getResend().emails.send({
     from: import.meta.env.RESEND_FROM_EMAIL,
-    to: larraeEmail,
+    to: chefEmail,
     replyTo: record.email,
     subject,
     html,
@@ -89,14 +90,14 @@ export async function sendLeadNotification(record: LeadRecord): Promise<void> {
  * regardless (LEAD-05, LEAD-10).
  */
 export async function sendLeadConfirmation(record: LeadRecord): Promise<void> {
-  const larraeEmail = await getLarraeEmail();
-  const html = await render(LeadConfirmation({ record, larraeEmail }));
+  const chefEmail = await getChefEmail();
+  const html = await render(LeadConfirmation({ record, chefEmail }));
   const firstName = record.name.split(/\s+/)[0] ?? record.name;
   const subject = `We got your request — thanks, ${firstName}`;
   await getResend().emails.send({
     from: import.meta.env.RESEND_FROM_EMAIL,
     to: record.email,
-    replyTo: larraeEmail,
+    replyTo: chefEmail,
     subject,
     html,
     // LEAD-12 correlation tags — consumed by src/pages/api/webhooks/resend.ts (Plan 06).

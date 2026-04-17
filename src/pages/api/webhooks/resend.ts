@@ -46,7 +46,6 @@ function verifySignature(rawBody: string, signatureHeader: string | null): boole
     // WR-06: diagnostic log for misconfigured environments. Without this,
     // operators see unexplained 401s in Vercel logs with no hint that the
     // env var is missing. Still fail-closed — we return false below.
-    // biome-ignore lint/suspicious/noConsole: server-side config error log
     console.error("resend_webhook_secret_missing");
     return false;
   }
@@ -107,8 +106,8 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   // Correlation tags emitted by Plan 05 send.ts. Do NOT rename keys.
-  const submissionId = event.data?.tags?.["submission_id"];
-  const which = event.data?.tags?.["which"];
+  const submissionId = event.data?.tags?.submission_id;
+  const which = event.data?.tags?.which;
   if (!submissionId || (which !== "notify" && which !== "confirm")) {
     console.warn("resend_webhook_missing_tags", { type: event.type });
     return new Response(JSON.stringify({ ok: true, handled: false }), {
@@ -130,7 +129,6 @@ export const POST: APIRoute = async ({ request }) => {
   try {
     await store.markEmailRetry(submissionId, which, status);
   } catch (err) {
-    // biome-ignore lint/suspicious/noConsole: server-side error log is intentional
     console.error("resend_webhook_update_failed", {
       submissionId,
       reason: String(err),
@@ -139,7 +137,7 @@ export const POST: APIRoute = async ({ request }) => {
     // returned 200, which Resend treats as a successful ACK — permanently
     // dropping the delivery-status update. A dropped update makes the retry
     // cron think the email is still pending and re-send it, causing duplicate
-    // emails to Larrae and/or the inquirer. Returning 500 keeps Resend's
+    // emails to the chef and/or the inquirer. Returning 500 keeps Resend's
     // built-in webhook retry loop alive until the store comes back online.
     return new Response(JSON.stringify({ error: "store_error" }), {
       status: 500,

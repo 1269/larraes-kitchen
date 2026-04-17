@@ -20,10 +20,7 @@ function firstNameOf(fullName: string | undefined): string {
   return first ?? trimmed;
 }
 
-function tierNameOf(
-  packageId: string | undefined,
-  packages: readonly PackageData[],
-): string {
+function tierNameOf(packageId: string | undefined, packages: readonly PackageData[]): string {
   if (packageId === "custom") return "Custom quote";
   const pkg = packages.find((p) => p.id === packageId);
   return pkg?.name ?? "—";
@@ -106,13 +103,12 @@ export default function ConfirmationView({
       </div>
 
       <p className="mt-8 text-body-md text-ink">
-        Reference:{" "}
-        <span className="font-mono text-body-lg text-ink">{submissionId}</span>
+        Reference: <span className="font-mono text-body-lg text-ink">{submissionId}</span>
       </p>
 
       <p className="mt-6 text-body-md text-ink">
-        Larrae will reply within 24 hours to confirm details and send a final
-        quote. Keep an eye on your inbox — and your spam folder, just in case.
+        Chef Larry will reply within 24 hours to confirm details and send a final quote. Keep an eye
+        on your inbox — and your spam folder, just in case.
       </p>
 
       <button

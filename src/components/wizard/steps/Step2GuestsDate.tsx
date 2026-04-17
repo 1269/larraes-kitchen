@@ -24,8 +24,7 @@ interface Props {
 }
 
 export default function Step2GuestsDate({ site }: Props) {
-  const { register, watch, setValue, formState, setError, clearErrors } =
-    useFormContext();
+  const { register, watch, setValue, formState, setError, clearErrors } = useFormContext();
   const guestCount = Number(watch("guestCount")) || 0;
   const zipValue = (watch("zip") as string | undefined) ?? "";
   const eventDateError = formState.errors.eventDate?.message as string | undefined;
@@ -41,7 +40,7 @@ export default function Step2GuestsDate({ site }: Props) {
     };
   } else if (guestCount > 200) {
     guestHint = {
-      text: `Groups over 200 need a direct conversation. Please email us at ${site.email} or submit below and Larrae will reach out.`,
+      text: `Groups over 200 need a direct conversation. Please email us at ${site.email} or submit below and Chef Larry will reach out.`,
       color: "text-accent",
     };
   } else if (guestCount > 75) {
@@ -51,17 +50,14 @@ export default function Step2GuestsDate({ site }: Props) {
     };
   }
 
-  const blackoutText =
-    site.blackoutDates.length > 0 ? site.blackoutDates.join(", ") : "none";
+  const blackoutText = site.blackoutDates.length > 0 ? site.blackoutDates.join(", ") : "none";
 
   return (
     <div className="mt-6 space-y-6">
       {/* Guest count: chips + numeric field */}
       <fieldset>
-        <legend className="text-body-sm text-ink font-semibold">
-          How many guests?
-        </legend>
-        <div role="group" aria-label="Guest count quick picks" className="mt-3 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap">
+        <legend className="text-body-sm text-ink font-semibold">How many guests?</legend>
+        <div className="mt-3 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap">
           {CHIPS.map((chip) => {
             const isActive = guestCount === chip.autofill;
             return (
@@ -88,17 +84,10 @@ export default function Step2GuestsDate({ site }: Props) {
             );
           })}
         </div>
-        {guestHint && (
-          <p className={`mt-3 text-body-sm ${guestHint.color}`}>
-            {guestHint.text}
-          </p>
-        )}
+        {guestHint && <p className={`mt-3 text-body-sm ${guestHint.color}`}>{guestHint.text}</p>}
 
         <div className="mt-4">
-          <label
-            htmlFor="guestCount"
-            className="text-body-sm text-ink font-semibold"
-          >
+          <label htmlFor="guestCount" className="text-body-sm text-ink font-semibold">
             Exact count (optional)
           </label>
           <Input
@@ -125,10 +114,7 @@ export default function Step2GuestsDate({ site }: Props) {
 
       {/* Event date */}
       <div>
-        <label
-          htmlFor="eventDate"
-          className="text-body-sm text-ink font-semibold"
-        >
+        <label htmlFor="eventDate" className="text-body-sm text-ink font-semibold">
           Event date
         </label>
         <Input
@@ -155,8 +141,7 @@ export default function Step2GuestsDate({ site }: Props) {
           })}
         />
         <p id="eventDate-hint" className="mt-2 text-body-sm text-ink/60">
-          We typically need {site.leadTimeDays} days lead time. Blackout dates:{" "}
-          {blackoutText}.
+          We typically need {site.leadTimeDays} days lead time. Blackout dates: {blackoutText}.
         </p>
         {eventDateError && (
           <p
@@ -196,7 +181,7 @@ export default function Step2GuestsDate({ site }: Props) {
         />
         {zipValue && !resolveServiceAreaCity(zipValue) && /^\d{5}$/.test(zipValue) && (
           <p id="zip-hint" className="mt-2 text-body-sm text-ink/60">
-            We may need to travel — Larrae will confirm.
+            We may need to travel — Chef Larry will confirm.
           </p>
         )}
         {zipError && (

@@ -14,12 +14,12 @@ interface Props {
 /**
  * Sticky bottom bar inside the wizard Dialog. Renders nothing until a valid
  * guest count is present (avoids "$0–$0" flash per D-13). For valid 10–75 guest
- * ranges: shows estimate range + "Final quote confirmed by Larrae". For
+ * ranges: shows estimate range + "Final quote confirmed by Chef Larry". For
  * custom-quote path (< 10, > 75, or packageId === "custom"): single centered
  * line.
  *
  * EST-04 EQUAL-VISUAL-WEIGHT CONTRACT (UI-SPEC §Live estimate copy line 224):
- * Both the range line and the Larrae-confirmation line use the same typography
+ * Both the range line and the chef-confirmation line use the same typography
  * token (`text-body-lg text-ink`). The range line adds `font-semibold`; the
  * confirmation line does not. Same size + same color = equal visual weight per
  * EST-04. DO NOT diminish the confirmation line to `text-body-md` — that would
@@ -58,25 +58,16 @@ export default function StickyEstimateBar({ packages }: Props) {
               Both share the typography token `text-body-lg text-ink` →
               equal visual weight. Range line adds font-semibold; confirmation
               line does not. */}
-          <p
-            className="text-body-lg text-ink font-semibold"
-            data-estimate-line="range"
-          >
+          <p className="text-body-lg text-ink font-semibold" data-estimate-line="range">
             Estimated ${range.min}–${range.max}
           </p>
-          <p
-            className="text-body-lg text-ink"
-            data-estimate-line="confirmation"
-          >
-            Final quote confirmed by Larrae
+          <p className="text-body-lg text-ink" data-estimate-line="confirmation">
+            Final quote confirmed by Chef Larry
           </p>
         </>
       ) : (
-        <p
-          className="text-body-lg text-ink text-center"
-          data-estimate-line="custom"
-        >
-          Custom quote — Larrae will follow up
+        <p className="text-body-lg text-ink text-center" data-estimate-line="custom">
+          Custom quote — Chef Larry will follow up
         </p>
       )}
     </div>

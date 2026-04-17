@@ -52,7 +52,7 @@ const STEP_COPY: Record<UrlStep, { eyebrow: string; heading: string; subtitle: s
   1: {
     eyebrow: "STEP 1 OF 4",
     heading: "Tell us about your event",
-    subtitle: "This helps Larrae tailor her reply.",
+    subtitle: "This helps Chef Larry tailor his reply.",
   },
   2: {
     eyebrow: "STEP 2 OF 4",
@@ -67,7 +67,7 @@ const STEP_COPY: Record<UrlStep, { eyebrow: string; heading: string; subtitle: s
   4: {
     eyebrow: "STEP 4 OF 4",
     heading: "How should we reach you?",
-    subtitle: "Larrae replies within 24 hours. Check your spam, just in case.",
+    subtitle: "Chef Larry replies within 24 hours. Check your spam, just in case.",
   },
 };
 

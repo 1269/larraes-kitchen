@@ -1,11 +1,12 @@
 // Source: Plan 03-03 Task 3 — source-of-truth spec for StickyEstimateBar.
 // Covers hidden/valid-range/custom-quote/EST-04 equal-visual-weight/A11Y-05.
-import type { ReactNode } from "react";
-import { describe, expect, it } from "vitest";
+
 import { render, screen } from "@testing-library/react";
+import type { ReactNode } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import StickyEstimateBar from "../StickyEstimateBar";
+import { describe, expect, it } from "vitest";
 import type { PackageData } from "@/lib/schemas/packages";
+import StickyEstimateBar from "../StickyEstimateBar";
 
 const PACKAGES: readonly PackageData[] = [
   {
@@ -58,7 +59,7 @@ describe("StickyEstimateBar", () => {
     expect(container.firstChild).toBeNull();
   });
 
-  it("renders Estimated $330–$420 for 15 small guests AND the Larrae-confirmation line", async () => {
+  it("renders Estimated $330–$420 for 15 small guests AND the chef-confirmation line", async () => {
     render(
       <Wrapper defaultValues={{ guestCount: 15, packageId: "small" }}>
         <StickyEstimateBar packages={PACKAGES} />
@@ -66,7 +67,7 @@ describe("StickyEstimateBar", () => {
     );
     await new Promise((r) => setTimeout(r, 300));
     expect(screen.getByText(/Estimated \$330–\$420/)).toBeTruthy();
-    expect(screen.getByText("Final quote confirmed by Larrae")).toBeTruthy();
+    expect(screen.getByText("Final quote confirmed by Chef Larry")).toBeTruthy();
   });
 
   it("renders Estimated $500–$650 for 25 medium guests", async () => {
@@ -79,7 +80,7 @@ describe("StickyEstimateBar", () => {
     expect(screen.getByText(/Estimated \$500–\$650/)).toBeTruthy();
   });
 
-  it("EST-04: range + Larrae-confirmation lines share the same typography token (equal visual weight, UI-SPEC §Live estimate copy line 224)", async () => {
+  it("EST-04: range + chef-confirmation lines share the same typography token (equal visual weight, UI-SPEC §Live estimate copy line 224)", async () => {
     render(
       <Wrapper defaultValues={{ guestCount: 15, packageId: "small" }}>
         <StickyEstimateBar packages={PACKAGES} />
@@ -87,7 +88,7 @@ describe("StickyEstimateBar", () => {
     );
     await new Promise((r) => setTimeout(r, 300));
     const rangeEl = screen.getByText(/^Estimated \$330–\$420$/);
-    const confirmEl = screen.getByText("Final quote confirmed by Larrae");
+    const confirmEl = screen.getByText("Final quote confirmed by Chef Larry");
     // Both lines use text-body-lg + text-ink — matching size + color tokens.
     expect(rangeEl.className).toContain("text-body-lg");
     expect(rangeEl.className).toContain("text-ink");
@@ -97,14 +98,14 @@ describe("StickyEstimateBar", () => {
     // by spec. Contract: same type-scale + same color = equal visual weight.
   });
 
-  it("renders Custom quote — Larrae will follow up when packageId is 'custom'", async () => {
+  it("renders Custom quote — Chef Larry will follow up when packageId is 'custom'", async () => {
     render(
       <Wrapper defaultValues={{ guestCount: 100, packageId: "custom" }}>
         <StickyEstimateBar packages={PACKAGES} />
       </Wrapper>,
     );
     await new Promise((r) => setTimeout(r, 300));
-    expect(screen.getByText("Custom quote — Larrae will follow up")).toBeTruthy();
+    expect(screen.getByText("Custom quote — Chef Larry will follow up")).toBeTruthy();
   });
 
   it("has aria-live='polite' and role='status' (A11Y-05)", async () => {

@@ -31,7 +31,7 @@ export interface LeadRecord {
   howHeard: string; // R — google | instagram | word-of-mouth | other | ""
   contactMethod: LeadInput["contactMethod"]; // S — email | phone | text
   ipHash: string; // T — SHA-256(salt + ip), 64-char hex (raw IP never stored)
-  notifyEmailStatus: EmailStatus; // U — Larrae notification email state (LEAD-10)
+  notifyEmailStatus: EmailStatus; // U — Chef notification email state (LEAD-10)
   confirmEmailStatus: EmailStatus; // V — inquirer confirmation email state (LEAD-10)
   retryCount: number; // W — cron retry attempt counter (LEAD-11)
   userAgent: string; // X — for debugging bot vs. human distinction

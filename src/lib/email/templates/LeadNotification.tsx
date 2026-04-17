@@ -1,18 +1,9 @@
-// Source: Plan 03-05 Task 1 — React Email template for Larrae's notification.
+// Source: Plan 03-05 Task 1 — React Email template for Chef Larry's notification.
 // CONTEXT D-16 (action-first phone-reading layout) + UI-SPEC §Email copy (subject in send.ts, not here) + LEAD-08.
 // Inline style tokens mirror UI-SPEC Typography: Lovelace/Playfair for display,
 // Playfair serif italic for price, monospace for submission ID, #1C1B19 ink,
 // #B8621B accent eyebrow, #2E4A2F primary green.
-import {
-  Body,
-  Container,
-  Head,
-  Heading,
-  Html,
-  Link,
-  Section,
-  Text,
-} from "@react-email/components";
+import { Body, Container, Head, Heading, Html, Link, Section, Text } from "@react-email/components";
 import { formatPhone } from "@/lib/format";
 import type { LeadRecord } from "@/lib/leads/LeadStore";
 
@@ -21,11 +12,10 @@ export interface LeadNotificationProps {
 }
 
 export default function LeadNotification({ record }: LeadNotificationProps) {
-  const hasEstimate =
-    record.finalEstimateMin != null && record.finalEstimateMax != null;
+  const hasEstimate = record.finalEstimateMin != null && record.finalEstimateMax != null;
   const estimateLabel = hasEstimate
     ? `$${record.finalEstimateMin}–$${record.finalEstimateMax}`
-    : "Custom quote — Larrae to follow up";
+    : "Custom quote — Chef Larry to follow up";
 
   return (
     <Html>
@@ -65,18 +55,12 @@ export default function LeadNotification({ record }: LeadNotificationProps) {
               {record.name}
             </Heading>
             <Text style={{ margin: "4px 0" }}>
-              <Link
-                href={`tel:${record.phone}`}
-                style={{ color: "#2E4A2F", fontWeight: 600 }}
-              >
+              <Link href={`tel:${record.phone}`} style={{ color: "#2E4A2F", fontWeight: 600 }}>
                 {formatPhone(record.phone)}
               </Link>
             </Text>
             <Text style={{ margin: "4px 0" }}>
-              <Link
-                href={`mailto:${record.email}`}
-                style={{ color: "#2E4A2F", fontWeight: 600 }}
-              >
+              <Link href={`mailto:${record.email}`} style={{ color: "#2E4A2F", fontWeight: 600 }}>
                 {record.email}
               </Link>
             </Text>
