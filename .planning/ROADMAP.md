@@ -15,7 +15,7 @@ Five phases move Larrae's Kitchen from empty repo to first real booking. Phase 1
 
 - [ ] **Phase 1: Foundation** - Astro 6 + React 19 + Tailwind v4 + shadcn/ui scaffold, content schemas, CI, Vercel, branch protection
 - [ ] **Phase 2: Content & Static Sections** - Canonical site.md, all 8 sections rendered from typed Content Collections with photography pipeline
-- [ ] **Phase 3: Inquiry Wizard & Lead Pipeline** - 4-step wizard island, live estimate, Astro Action, Resend email, spam defense, lead storage
+- [x] **Phase 3: Inquiry Wizard & Lead Pipeline** - 4-step wizard island, live estimate, Astro Action, Resend email, spam defense, lead storage (completed 2026-04-17)
 - [ ] **Phase 4: SEO, Accessibility & Performance** - JSON-LD, sitemap, a11y audit, CWV verification, observability
 - [ ] **Phase 5: Launch Prep** - Production email auth, GBP alignment, smoke-test matrix, rollback, first real booking
 
@@ -85,7 +85,7 @@ Five phases move Larrae's Kitchen from empty repo to first real booking. Phase 1
   - [x] 03-03-PLAN.md — Wizard island + 4 step components + sticky estimate bar + confirmation view + state persistence + URL sync + entry-point retargets
   - [x] 03-04-PLAN.md — LeadStore interface + GoogleSheetsAdapter + InMemoryLeadStore + submission ID + rate limit + bot gates + sheets-setup docs
   - [x] 03-05-PLAN.md — submitInquiry Astro Action (9-step store-first pipeline) + Turnstile verify + Resend + React Email templates
-  - [ ] 03-06-PLAN.md — Daily retry cron + Resend webhook (HMAC) + vercel.json + Playwright E2E suite (happy path / deep-link / silent-bot / keyboard)
+  - [x] 03-06-PLAN.md — Daily retry cron + Resend webhook (HMAC) + vercel.json + Playwright E2E suite (happy path / deep-link / silent-bot / keyboard)
 **UI hint**: yes
 
 ### Phase 4: SEO, Accessibility & Performance
@@ -125,7 +125,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Foundation | 0/TBD | Not started | - |
 | 2. Content & Static Sections | 0/TBD | Not started | - |
-| 3. Inquiry Wizard & Lead Pipeline | 5/6 | In Progress|  |
+| 3. Inquiry Wizard & Lead Pipeline | 6/6 | Complete   | 2026-04-17 |
 | 4. SEO, Accessibility & Performance | 0/TBD | Not started | - |
 | 5. Launch Prep | 0/TBD | Not started | - |
 
