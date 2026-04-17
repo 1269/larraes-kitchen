@@ -1,0 +1,19 @@
+---
+// Source: PATTERNS §WizardDialog.astro — server-rendered wrapper that loads
+// packages + site data and hands them to the React island as typed props.
+// client:load: wizard must be available to `wizard:open` CustomEvent dispatchers
+// from page entry points (Task 2b) the instant the page finishes hydrating.
+import type { PackageData } from "@/lib/schemas/packages";
+import WizardIsland from "./WizardIsland";
+
+interface Props {
+  packages: PackageData[];
+  site: {
+    leadTimeDays: number;
+    blackoutDates: string[];
+    email: string;
+  };
+}
+const { packages, site } = Astro.props;
+---
+<WizardIsland client:load packages={packages} site={site} />
