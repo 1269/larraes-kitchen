@@ -26,8 +26,19 @@ const MAX_RETRIES = 3;
 const MIN_AGE_MS = 60 * 60 * 1000; // 1 hour
 
 export const GET: APIRoute = async ({ request }) => {
+  // CR-03: Fail-closed when CRON_SECRET is not configured. Without this early
+  // return, `Bearer ${undefined}` template-stringifies to "Bearer undefined",
+  // and a caller sending `Authorization: Bearer undefined` would bypass auth
+  // in a misconfigured environment.
+  const cronSecret = import.meta.env.CRON_SECRET;
+  if (!cronSecret) {
+    return new Response(JSON.stringify({ error: "unauthorized" }), {
+      status: 401,
+      headers: { "content-type": "application/json" },
+    });
+  }
   const auth = request.headers.get("authorization");
-  const expected = `Bearer ${import.meta.env.CRON_SECRET}`;
+  const expected = `Bearer ${cronSecret}`;
   if (!auth || auth !== expected) {
     return new Response(JSON.stringify({ error: "unauthorized" }), {
       status: 401,
