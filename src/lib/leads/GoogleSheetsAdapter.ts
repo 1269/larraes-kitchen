@@ -19,13 +19,18 @@ const LEADS_HEADER_ROW_COUNT = 1;
 
 /**
  * Belt-and-suspenders mitigation against formula injection (RESEARCH A4).
- * Even though valueInputOption:"RAW" disables parsing, we prefix any leading '='
- * with a single apostrophe so that a manual column-format flip to USER_ENTERED
- * would still treat the cell as a string. Pure-text normalization.
+ * Even though valueInputOption:"RAW" disables parsing, we prefix any leading
+ * formula-trigger character with a single apostrophe so that a manual column
+ * format flip to "Automatic"/USER_ENTERED would still treat the cell as a
+ * string. Pure-text normalization.
+ *
+ * Trigger characters: `=` is the primary trigger; `+`, `-`, `@`, and `\t`
+ * are secondary triggers in Automatic-formatted columns across Google Sheets
+ * and LibreOffice Calc.
  */
 const safeText = (s: string | null | undefined): string => {
   if (!s) return "";
-  return s.startsWith("=") ? `'${s}` : s;
+  return /^[=+\-@\t]/.test(s) ? `'${s}` : s;
 };
 
 /** Serialize a LeadRecord to the 24-column Sheets row order declared in RESEARCH §Pattern 7. */
@@ -42,13 +47,13 @@ function leadRecordToRow(r: LeadRecord): (string | number)[] {
     r.finalEstimateMin ?? "", // I
     r.finalEstimateMax ?? "", // J
     safeText(r.name), // K
-    r.email, // L
-    r.phone, // M
-    r.zip, // N
+    safeText(r.email), // L — WR-01: applied for consistency, RAW value mode is primary guard
+    safeText(r.phone), // M — WR-01: applied for consistency, RAW value mode is primary guard
+    r.zip, // N (numeric-only per Zod regex — no formula prefix possible)
     safeText(r.eventAddress), // O
     safeText(r.eventCity), // P
     safeText(r.notes), // Q — primary formula-injection target
-    r.howHeard, // R
+    safeText(r.howHeard), // R — WR-01: applied for consistency across free-text fields
     r.contactMethod, // S
     r.ipHash, // T
     r.notifyEmailStatus, // U
@@ -167,10 +172,7 @@ export class GoogleSheetsAdapter implements LeadStore {
     });
   }
 
-  async findPendingEmails(opts: {
-    maxRetries: number;
-    minAgeMs: number;
-  }): Promise<LeadRecord[]> {
+  async findPendingEmails(opts: { maxRetries: number; minAgeMs: number }): Promise<LeadRecord[]> {
     const { rows } = await this.readAllLeadRows();
     const nowMs = Date.now();
     const records: LeadRecord[] = [];
@@ -228,6 +230,14 @@ export class GoogleSheetsAdapter implements LeadStore {
     });
     const rows = (res.data.values ?? []) as (string | number | null | undefined)[][];
     const cutoff = Date.now() - windowMs;
-    return rows.filter((r) => String(r[0] ?? "") === ipHash && Number(r[1] ?? 0) >= cutoff).length;
+    // WR-04: explicit header-row guard. Previously we relied on the fact that
+    // Number("timestamp_ms") is NaN and NaN >= cutoff is false; make it explicit
+    // so behaviour does not depend on floating-point quirks.
+    const dataRows = rows.filter((r) => {
+      const ts = Number(r[1] ?? 0);
+      return Number.isFinite(ts) && ts > 0;
+    });
+    return dataRows.filter((r) => String(r[0] ?? "") === ipHash && Number(r[1] ?? 0) >= cutoff)
+      .length;
   }
 }
