@@ -16,7 +16,8 @@
     "lint:fix": "biome check --write .",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "check:images": "bash scripts/check-image-budget.sh"
+    "check:images": "bash scripts/check-image-budget.sh",
+    "check:turnstile": "bash scripts/check-turnstile-keys.sh"
   },
   "dependencies": {
     "@astrojs/mdx": "^5.0.3",
