@@ -74,11 +74,8 @@ export const GET: APIRoute = async ({ request }) => {
     }
   }
 
-  return new Response(
-    JSON.stringify({ scanned: pending.length, sent, failed }),
-    {
-      status: 200,
-      headers: { "content-type": "application/json" },
-    },
-  );
+  return new Response(JSON.stringify({ scanned: pending.length, sent, failed }), {
+    status: 200,
+    headers: { "content-type": "application/json" },
+  });
 };

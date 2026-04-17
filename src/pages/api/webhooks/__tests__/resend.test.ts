@@ -73,9 +73,7 @@ describe("Resend webhook POST", () => {
       ),
     );
     expect(res.status).toBe(401);
-    const after = await store.findByIdempotencyKey(
-      "11111111-1111-4111-8111-111111111111",
-    );
+    const after = await store.findByIdempotencyKey("11111111-1111-4111-8111-111111111111");
     expect(after?.notifyEmailStatus).toBe("pending");
   });
 
@@ -122,9 +120,7 @@ describe("Resend webhook POST", () => {
       ),
     );
     expect(res.status).toBe(200);
-    const after = await store.findByIdempotencyKey(
-      "11111111-1111-4111-8111-111111111111",
-    );
+    const after = await store.findByIdempotencyKey("11111111-1111-4111-8111-111111111111");
     expect(after?.notifyEmailStatus).toBe("sent");
     expect(after?.confirmEmailStatus).toBe("pending");
   });
@@ -145,9 +141,7 @@ describe("Resend webhook POST", () => {
       ),
     );
     expect(res.status).toBe(200);
-    const after = await store.findByIdempotencyKey(
-      "11111111-1111-4111-8111-111111111111",
-    );
+    const after = await store.findByIdempotencyKey("11111111-1111-4111-8111-111111111111");
     expect(after?.confirmEmailStatus).toBe("failed");
   });
 
@@ -186,9 +180,7 @@ describe("Resend webhook POST", () => {
       ),
     );
     expect(res.status).toBe(200);
-    const after = await store.findByIdempotencyKey(
-      "11111111-1111-4111-8111-111111111111",
-    );
+    const after = await store.findByIdempotencyKey("11111111-1111-4111-8111-111111111111");
     expect(after?.notifyEmailStatus).toBe("sent");
   });
 });

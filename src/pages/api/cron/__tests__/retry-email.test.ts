@@ -133,9 +133,7 @@ describe("retry-email cron GET", () => {
   });
 
   it("returns scanned:0 when store has no pending leads", async () => {
-    await store.append(
-      fixture({ notifyEmailStatus: "sent", confirmEmailStatus: "sent" }),
-    );
+    await store.append(fixture({ notifyEmailStatus: "sent", confirmEmailStatus: "sent" }));
     const res = await GET(
       ctx(
         new Request("http://local/api/cron/retry-email", {

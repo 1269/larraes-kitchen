@@ -4,7 +4,7 @@
 // RESEARCH §Pattern 2 (Astro Action submit) + §Event-based decoupling (wizard:open).
 // T-03-17 mitigation: step-boundary validation is UX only; Plan 05 Action re-parses
 // the same leadSchema server-side (LEAD-01).
-import { zodResolver } from "@hookform/resolvers/zod";
+import { zodResolver } from "@/lib/forms/zodResolver";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import {
