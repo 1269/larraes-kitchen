@@ -1,5 +1,6 @@
 // Source: CONTEXT D-05, D-07..D-09, D-14, D-19 + RESEARCH §Pattern 1 + REQUIREMENTS LEAD-01/04/07, SPAM-01/03/04, WIZ-11. Canonical template.
 import { z } from "zod";
+import { validateEventDate } from "@/components/wizard/validation/eventDate";
 
 export const leadSchema = z.object({
   // Step 1 — Event type (D-05, D-06)
@@ -37,3 +38,29 @@ export const leadSchema = z.object({
 });
 
 export type LeadInput = z.infer<typeof leadSchema>;
+
+/**
+ * WR-03: Server-side business-rule validation for `eventDate`. The client-side
+ * `onBlur` handler in Step2GuestsDate.tsx runs the same `validateEventDate`
+ * against site lead-time and blackout config, but a bot that bypasses the
+ * client and posts directly to the Astro Action can submit a past date or
+ * blackout date because `leadSchema` only checks the YYYY-MM-DD format. This
+ * helper re-applies the same business rules on the server BEFORE `store.append`
+ * so a bypass path cannot persist a logically-invalid lead.
+ *
+ * Kept as a separate helper (rather than folding into `leadSchema.superRefine`)
+ * to preserve the existing client/server schema parity — the same `leadSchema`
+ * parses on both sides; only the server pipeline calls this extra check.
+ *
+ * Returns `null` on valid, or the UI-SPEC-locked error string on invalid.
+ */
+export function validateLeadBusinessRules(
+  input: Pick<LeadInput, "eventDate">,
+  site: { leadTimeDays: number; blackoutDates: readonly string[]; email?: string },
+): string | null {
+  return validateEventDate(input.eventDate, {
+    leadTimeDays: site.leadTimeDays,
+    blackoutDates: site.blackoutDates,
+    siteEmail: site.email,
+  });
+}

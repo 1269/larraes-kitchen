@@ -15,15 +15,15 @@
 //   9. Promise.allSettled email fan-out (LEAD-10 — either failure does NOT
 //      abort the other; lead record persists; status columns updated after)
 import { ActionError, defineAction } from "astro:actions";
-import { getCollection } from "astro:content";
+import { getCollection, getEntry } from "astro:content";
+import { sendLeadConfirmation, sendLeadNotification } from "@/lib/email/send";
 import { checkHoneypot, checkMinTime, checkUrlHeuristics } from "@/lib/leads/botGates";
 import type { LeadRecord } from "@/lib/leads/LeadStore";
 import { hashIp, rateLimitCheck } from "@/lib/leads/rateLimit";
 import { getLeadStore } from "@/lib/leads/store";
 import { makeSubmissionId } from "@/lib/leads/submissionId";
-import { sendLeadConfirmation, sendLeadNotification } from "@/lib/email/send";
-import { estimate, type EstimateRange } from "@/lib/pricing/estimate";
-import { leadSchema, type LeadInput } from "@/lib/schemas/lead";
+import { type EstimateRange, estimate } from "@/lib/pricing/estimate";
+import { type LeadInput, leadSchema, validateLeadBusinessRules } from "@/lib/schemas/lead";
 
 export interface SubmitInquiryResult {
   submissionId: string;
@@ -35,6 +35,14 @@ export interface SubmitInquiryResult {
  * 200 with a fresh LK-XXXXXX that is NEVER persisted to the store and NEVER
  * triggers an email send — indistinguishable from real success to the bot, so
  * attackers cannot tell which gate fired or retry differently.
+ *
+ * WR-05 namespace accounting note: decoy IDs share the 32^6 (~1.07B) short-form
+ * LK-XXXXXX space with real IDs but are never persisted, so a real submission
+ * could in theory collide with a previously-issued decoy short-form. The full
+ * 26-char ULID in column C remains collision-safe regardless. At expected
+ * catering traffic (< 100 real submissions/month), birthday-paradox collisions
+ * on the short form are negligible — we accept this trade-off for v1 rather
+ * than deduplicating against an ephemeral decoy store.
  */
 function decoySuccess(): SubmitInquiryResult {
   const { submissionId } = makeSubmissionId();
@@ -66,9 +74,39 @@ export async function submitInquiryHandler(
   const ipHash = hashIp(ip);
 
   // 5. Rate-limit check (LEAD-03). Under cap → records a hit + allows; at cap → no hit, reject.
+  //
+  // CR-02 (accepted_design_tradeoff): TOO_MANY_REQUESTS is INTENTIONALLY distinguishable
+  // from the silent-decoy bot gates above (honeypot/min-time/URL heuristics return
+  // decoySuccess()). The plan decision (CONTEXT D-18) surfaces rate-limiting to real
+  // users via the "rate_limit" alert so they know to try again later, rather than
+  // silently dropping legitimate repeat submissions. A sophisticated attacker can
+  // detect this gate fires, but cannot bypass it — the cap is hard and the hit is
+  // not recorded on the reject path (see rateLimitCheck), so quota is preserved.
+  // Do NOT unify this path with decoySuccess() without reopening the D-18 UX decision.
   const rl = await rateLimitCheck(store, ipHash);
   if (!rl.allowed) {
     throw new ActionError({ code: "TOO_MANY_REQUESTS", message: "rate_limited" });
+  }
+
+  // 5b. Server-side business-rule validation for eventDate (WR-03).
+  //     The client runs the same validateEventDate() on blur; this covers the
+  //     bot-bypass path where the client is skipped and the Action is posted
+  //     directly. Format is already enforced by leadSchema; this adds the
+  //     lead-time + blackout-date checks that require site config.
+  const siteEntry = await getEntry("site", "site");
+  const siteData = siteEntry?.data;
+  if (siteData) {
+    const dateError = validateLeadBusinessRules(
+      { eventDate: input.eventDate },
+      {
+        leadTimeDays: siteData.leadTimeDays,
+        blackoutDates: siteData.blackoutDates,
+        email: siteData.email,
+      },
+    );
+    if (dateError) {
+      throw new ActionError({ code: "BAD_REQUEST", message: dateError });
+    }
   }
 
   // 6. Idempotency (LEAD-04) — replay of the same request returns the prior record,
@@ -149,8 +187,7 @@ export async function submitInquiryHandler(
   ]);
   const statuses = {
     notify: notifyResult.status === "fulfilled" ? ("sent" as const) : ("failed" as const),
-    confirm:
-      confirmResult.status === "fulfilled" ? ("sent" as const) : ("failed" as const),
+    confirm: confirmResult.status === "fulfilled" ? ("sent" as const) : ("failed" as const),
   };
 
   try {

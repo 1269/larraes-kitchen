@@ -54,7 +54,18 @@ vi.mock("astro:content", () => ({
       },
     },
   ]),
-  getEntry: vi.fn(async () => ({ data: { email: "larrae@example.com" } })),
+  getEntry: vi.fn(async (collection: string, _slug: string) => {
+    if (collection === "site") {
+      return {
+        data: {
+          email: "larrae@example.com",
+          leadTimeDays: 7,
+          blackoutDates: ["2026-12-25"],
+        },
+      };
+    }
+    return { data: { email: "larrae@example.com" } };
+  }),
 }));
 
 vi.mock("@/lib/spam/turnstile", () => ({
@@ -66,10 +77,10 @@ vi.mock("@/lib/email/send", () => ({
   sendLeadConfirmation: vi.fn(async () => {}),
 }));
 
-import { submitInquiryHandler } from "../submitInquiry";
 import { InMemoryLeadStore } from "@/lib/leads/InMemoryLeadStore";
 import { resetLeadStoreForTests } from "@/lib/leads/store";
 import type { LeadInput } from "@/lib/schemas/lead";
+import { submitInquiryHandler } from "../submitInquiry";
 
 function baseInput(overrides: Partial<LeadInput> = {}): LeadInput {
   return {
@@ -110,9 +121,7 @@ describe("submitInquiryHandler", () => {
     // Re-prime the default turnstile mock to success (vi.clearAllMocks clears impls).
     const { verifyTurnstile } = await import("@/lib/spam/turnstile");
     vi.mocked(verifyTurnstile).mockResolvedValue({ success: true });
-    const { sendLeadNotification, sendLeadConfirmation } = await import(
-      "@/lib/email/send"
-    );
+    const { sendLeadNotification, sendLeadConfirmation } = await import("@/lib/email/send");
     vi.mocked(sendLeadNotification).mockResolvedValue(undefined);
     vi.mocked(sendLeadConfirmation).mockResolvedValue(undefined);
   });
@@ -121,9 +130,7 @@ describe("submitInquiryHandler", () => {
   });
 
   it("happy path: stores the lead, sends both emails, returns submissionId + estimate", async () => {
-    const { sendLeadNotification, sendLeadConfirmation } = await import(
-      "@/lib/email/send"
-    );
+    const { sendLeadNotification, sendLeadConfirmation } = await import("@/lib/email/send");
     const res = await submitInquiryHandler(
       baseInput(),
       ctx as unknown as Parameters<typeof submitInquiryHandler>[1],
@@ -138,9 +145,7 @@ describe("submitInquiryHandler", () => {
   });
 
   it("silent decoy on honeypot filled: returns 200-like success, no store, no email", async () => {
-    const { sendLeadNotification, sendLeadConfirmation } = await import(
-      "@/lib/email/send"
-    );
+    const { sendLeadNotification, sendLeadConfirmation } = await import("@/lib/email/send");
     const res = await submitInquiryHandler(
       baseInput({ honeypot: "spam" }),
       ctx as unknown as Parameters<typeof submitInquiryHandler>[1],
@@ -234,9 +239,7 @@ describe("submitInquiryHandler", () => {
   });
 
   it("both emails fail → lead persists with both statuses='failed' and Action still succeeds", async () => {
-    const { sendLeadNotification, sendLeadConfirmation } = await import(
-      "@/lib/email/send"
-    );
+    const { sendLeadNotification, sendLeadConfirmation } = await import("@/lib/email/send");
     vi.mocked(sendLeadNotification).mockRejectedValueOnce(new Error("fail1"));
     vi.mocked(sendLeadConfirmation).mockRejectedValueOnce(new Error("fail2"));
     const res = await submitInquiryHandler(
@@ -274,5 +277,31 @@ describe("submitInquiryHandler", () => {
       ctx as unknown as Parameters<typeof submitInquiryHandler>[1],
     );
     expect(store.all()[0]?.userAgent).toBe("test-ua");
+  });
+
+  it("WR-03: rejects blackout date bypass with BAD_REQUEST; no store written", async () => {
+    await expect(
+      submitInquiryHandler(
+        baseInput({
+          eventDate: "2026-12-25", // blackout date from the site mock
+          idempotencyKey: "77777777-7777-4777-8777-777777777777",
+        }),
+        ctx as unknown as Parameters<typeof submitInquiryHandler>[1],
+      ),
+    ).rejects.toMatchObject({ code: "BAD_REQUEST" });
+    expect(store.all()).toHaveLength(0);
+  });
+
+  it("WR-03: rejects past event date bypass with BAD_REQUEST; no store written", async () => {
+    await expect(
+      submitInquiryHandler(
+        baseInput({
+          eventDate: "2020-01-01", // past date — bot bypass path
+          idempotencyKey: "88888888-8888-4888-8888-888888888888",
+        }),
+        ctx as unknown as Parameters<typeof submitInquiryHandler>[1],
+      ),
+    ).rejects.toMatchObject({ code: "BAD_REQUEST" });
+    expect(store.all()).toHaveLength(0);
   });
 });
