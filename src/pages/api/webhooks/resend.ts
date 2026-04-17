@@ -42,7 +42,14 @@ interface ResendEvent {
 function verifySignature(rawBody: string, signatureHeader: string | null): boolean {
   if (!signatureHeader) return false;
   const secret = import.meta.env.RESEND_WEBHOOK_SECRET;
-  if (!secret) return false;
+  if (!secret) {
+    // WR-06: diagnostic log for misconfigured environments. Without this,
+    // operators see unexplained 401s in Vercel logs with no hint that the
+    // env var is missing. Still fail-closed — we return false below.
+    // biome-ignore lint/suspicious/noConsole: server-side config error log
+    console.error("resend_webhook_secret_missing");
+    return false;
+  }
 
   const expected = createHmac("sha256", secret).update(rawBody).digest("hex");
   // Header format may be bare hex OR "sha256=<hex>"; accept both.
@@ -123,9 +130,20 @@ export const POST: APIRoute = async ({ request }) => {
   try {
     await store.markEmailRetry(submissionId, which, status);
   } catch (err) {
+    // biome-ignore lint/suspicious/noConsole: server-side error log is intentional
     console.error("resend_webhook_update_failed", {
       submissionId,
       reason: String(err),
+    });
+    // CR-04: Return 500 so Resend retries the webhook. Previously this path
+    // returned 200, which Resend treats as a successful ACK — permanently
+    // dropping the delivery-status update. A dropped update makes the retry
+    // cron think the email is still pending and re-send it, causing duplicate
+    // emails to Larrae and/or the inquirer. Returning 500 keeps Resend's
+    // built-in webhook retry loop alive until the store comes back online.
+    return new Response(JSON.stringify({ error: "store_error" }), {
+      status: 500,
+      headers: { "content-type": "application/json" },
     });
   }
 
