@@ -273,10 +273,8 @@ export default function WizardIsland({ packages, site }: Props) {
       setIsSubmitting(true);
       setAlert(null);
       try {
-        // Dynamic import of astro:actions — Plan 05 ships the handler; until
-        // then the import may resolve to an unimplemented action. Stub fallback
-        // below flips to confirmation with `LK-PLACE` so the E2E smoke flow can
-        // validate the client journey. Plan 05 Task 3 removes this catch.
+        // Plan 05 Task 2 shipped the real handler — this import resolves at
+        // runtime to the Astro Actions barrel (src/actions/index.ts → server.submitInquiry).
         const astroActions = await import("astro:actions");
         const actions = (astroActions as unknown as {
           actions: { submitInquiry: (fd: FormData) => Promise<unknown> };
@@ -285,8 +283,6 @@ export default function WizardIsland({ packages, site }: Props) {
         const isInputError = (astroActions as unknown as {
           isInputError: (e: unknown) => boolean;
         }).isInputError;
-
-        if (!actions?.submitInquiry) throw new Error("submitInquiry not yet wired");
 
         const formData = new FormData();
         for (const [k, v] of Object.entries(values)) {
@@ -301,6 +297,7 @@ export default function WizardIsland({ packages, site }: Props) {
         };
         const { data, error } = result;
 
+        // D-18 error UX — map ActionError codes to client alert kinds.
         if (error && isInputError(error)) {
           wizardAnalytics.submitFailure("validation");
           setAlert("server");
@@ -335,16 +332,6 @@ export default function WizardIsland({ packages, site }: Props) {
             estimateMax: data.estimate?.max ?? null,
           });
         }
-      } catch (err) {
-        // Plan 05 stub fallback — remove in Plan 05 Task 3. The literal
-        // "LK-PLACE" is asserted as a negative in Plan 06 E2E (it must NOT
-        // appear once the Action is wired live).
-        // biome-ignore lint/suspicious/noConsole: dev-only stub signal
-        console.warn("submitInquiry not yet wired; using placeholder success", err);
-        setSubmissionId("LK-PLACE");
-        setFinalEstimate(null);
-        setMode("confirmation");
-        clearSnapshot();
       } finally {
         setIsSubmitting(false);
       }
