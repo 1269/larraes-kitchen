@@ -44,8 +44,11 @@ describe("LeadConfirmation template", () => {
     const html = await render(
       <LeadConfirmation record={fixture} larraeEmail="hello@larraeskitchen.com" />,
     );
-    expect(html).toContain("Thanks, Ethan");
-    expect(html).toContain("your request is in");
+    // React SSR interleaves `<!-- -->` between adjacent text/expression nodes;
+    // strip them before substring-matching the rendered heading.
+    const stripped = html.replace(/<!--[^]*?-->/g, "");
+    expect(stripped).toContain("Thanks, Ethan");
+    expect(stripped).toContain("your request is in");
   });
 
   it("renders the event recap (type, guests, date, package) and estimate", async () => {

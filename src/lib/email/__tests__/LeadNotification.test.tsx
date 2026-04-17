@@ -44,7 +44,10 @@ describe("LeadNotification template", () => {
     const html = await render(<LeadNotification record={fixture} />);
     expect(html).toContain("cynthia@example.com");
     expect(html).toContain("family");
-    expect(html).toContain("15 guests");
+    // React SSR inserts <!-- --> between adjacent text nodes — match either
+    // the raw fragment or the combined phrase after comment removal.
+    const stripped = html.replace(/<!--[^]*?-->/g, "");
+    expect(stripped).toContain("15 guests");
     expect(html).toContain("2026-06-15");
     expect(html).toContain("LK-4Q7P3B");
   });

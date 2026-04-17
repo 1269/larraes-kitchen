@@ -24,7 +24,8 @@ describe("verifyTurnstile", () => {
 
     expect(result.success).toBe(true);
     expect(mockFetch).toHaveBeenCalledTimes(1);
-    const [url, init] = mockFetch.mock.calls[0] as [string, RequestInit];
+    const call = mockFetch.mock.calls[0] as unknown as [string, RequestInit];
+    const [url, init] = call;
     expect(url).toBe("https://challenges.cloudflare.com/turnstile/v0/siteverify");
     expect(init.method).toBe("POST");
     const body = init.body as URLSearchParams;
