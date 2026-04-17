@@ -1,0 +1,66 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-04-17T10:42:30.122Z",
+  "phase": "03",
+  "phase_name": "Inquiry Wizard & Lead Pipeline",
+  "phase_dir": ".planning/phases/03-inquiry-wizard-lead-pipeline",
+  "plan": null,
+  "task": null,
+  "total_tasks": null,
+  "status": "awaiting_human_uat",
+  "completed_tasks": [
+    {"id": "03-01", "name": "Foundation schemas + pricing + env rename", "status": "done", "commit": "397c6da"},
+    {"id": "03-02", "name": "Deps + shadcn primitives + Analytics + SPAM-06 gate", "status": "done", "commit": "aaccfc3"},
+    {"id": "03-03", "name": "React wizard island + 4 steps + entry-point retargets", "status": "done", "commit": "49936b2"},
+    {"id": "03-04", "name": "LeadStore + GoogleSheetsAdapter + bot gates + rate limit", "status": "done", "commit": "cea813d"},
+    {"id": "03-05", "name": "submitInquiry Action + Turnstile + Resend emails", "status": "done", "commit": "1c65991"},
+    {"id": "03-06", "name": "Retry cron + Resend webhook + Playwright E2E", "status": "done", "commit": "6bb7c35"},
+    {"id": "03-CR", "name": "Code review (4 CRITICAL + 6 WARNING + 5 INFO)", "status": "done", "commit": "015629f"},
+    {"id": "03-CR-FIX", "name": "Auto-fix all 4 CRITICAL + 6 WARNING findings", "status": "done", "commit": "798af2b"},
+    {"id": "03-VERIFY", "name": "Phase goal verification (6/7 must_haves — 3 human UAT pending)", "status": "done", "commit": "cb68adf"}
+  ],
+  "remaining_tasks": [
+    {"id": "UAT-1", "name": "Wizard submit flow end-to-end on mobile Vercel Preview", "status": "not_started"},
+    {"id": "UAT-2", "name": "Bot decoy path (honeypot injection → no Sheets row written)", "status": "not_started"},
+    {"id": "UAT-3", "name": "Email delivery (Larrae notification + inquirer confirmation)", "status": "not_started"},
+    {"id": "VERIFY-CLOSE", "name": "Flip VERIFICATION.md status from human_needed to passed and mark phase complete in ROADMAP", "status": "not_started"}
+  ],
+  "blockers": [
+    {
+      "description": "Resend credentials (RESEND_API_KEY + RESEND_FROM_EMAIL) not yet provisioned — blocks UAT-3 email delivery verification",
+      "type": "human_action",
+      "workaround": "UAT-1 and UAT-2 can be completed independently on Vercel Preview once Turnstile + Sheets creds are in place"
+    },
+    {
+      "description": "Pre-existing React 19 SSR 'Invalid hook call' warning in wizard hydration path blocks 3 of 5 Playwright E2E specs from running the full submit flow",
+      "type": "technical",
+      "workaround": "Manual browser verification covers the gap. Phase 5 owns the @hookform/resolvers v3→v5 migration that resolves this."
+    }
+  ],
+  "human_actions_pending": [
+    {
+      "action": "Meet with client to obtain Resend API credentials",
+      "context": "Client needs to provision/share RESEND_API_KEY + RESEND_FROM_EMAIL for Vercel Preview environment. This unblocks UAT-3.",
+      "blocking": true
+    },
+    {
+      "action": "Provision Vercel Preview env vars: PUBLIC_TURNSTILE_SITE_KEY, TURNSTILE_SECRET_KEY, GOOGLE_SHEETS_CREDENTIALS_JSON, GOOGLE_SHEETS_LEAD_SHEET_ID, CRON_SECRET, RESEND_WEBHOOK_SECRET, RESEND_API_KEY, RESEND_FROM_EMAIL",
+      "context": "All 8 env vars are registered in src/env.d.ts and .env.example but need actual values in Vercel Preview before UAT can run end-to-end.",
+      "blocking": true
+    },
+    {
+      "action": "Run the 3 UAT items on Vercel Preview and record results in 03-HUMAN-UAT.md",
+      "context": "See .planning/phases/03-inquiry-wizard-lead-pipeline/03-HUMAN-UAT.md for exact steps.",
+      "blocking": true
+    }
+  ],
+  "decisions": [
+    {"decision": "Accept rate-limit timing-distinguishable response (CR-02) as intentional design", "rationale": "Real users hitting rate limit SHOULD see 'too many attempts' error, not silent success — the silent-decoy contract applies only to honeypot/min-time/URL-in-notes gates, not to rate limiting.", "phase": "03"},
+    {"decision": "Use @react-email/render + comment-stripping substring tests instead of snapshot tests", "rationale": "Snapshots would couple to React's internal HTML comment insertion behavior; substring matching is resilient to renderer updates.", "phase": "03"},
+    {"decision": "Hand-author src/components/ui/form.tsx", "rationale": "radix-nova style registry ships empty form.json; hand-authored file matches default shadcn semantics but uses repo's unified radix-ui import convention.", "phase": "03"},
+    {"decision": "Add zodResolver shim in src/lib/forms/ bridging Zod v4 .issues → @hookform/resolvers@3.x .errors expectation", "rationale": "@hookform/resolvers v5 supports Zod v4 natively but changes useForm generic inference; broader refactor deferred.", "phase": "03"}
+  ],
+  "uncommitted_files": [],
+  "next_action": "After client meeting: provision Resend creds in Vercel Preview, run the 3 UAT items in 03-HUMAN-UAT.md, then run /gsd-verify-work 3 to flip phase status to passed.",
+  "context_notes": "Phase 3 is code-complete and test-green (177/177 unit + integration tests passing). All launch-blocker code-review findings are fixed. The only thing standing between Phase 3 and completion is 3 human-verified UAT items that require live Vercel Preview + client-provided Resend creds. The wizard is live at pnpm dev and renders/navigates correctly in a browser; submit flow needs Preview env because of env-var dependencies (Turnstile, Sheets, Resend)."
+}
